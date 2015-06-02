@@ -65,7 +65,7 @@ int main(int argc, const char * argv[]) {
                         } else if(intersection.getSide() == "Negative Top") {
                             cout << "(-1,1) , (" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ")";
                         } else if(intersection.getSide() == "Positive Top") {
-                            cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (-1,1)";
+                            cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (1,1)";
                         }
                         cout << " on " << intersection.getSide() << " and ";
                         if(intersection1.getSide() == "Left") {
@@ -75,7 +75,7 @@ int main(int argc, const char * argv[]) {
                         } else if(intersection1.getSide() == "Negative Top") {
                             cout << "(-1,1) , (" << intersection1.getPoint().getX() << "," << intersection1.getPoint().getY() << ")";
                         } else if(intersection1.getSide() == "Positive Top") {
-                            cout << "(" << intersection1.getPoint().getX() << "," << intersection1.getPoint().getY() << ") , (-1,1)";
+                            cout << "(" << intersection1.getPoint().getX() << "," << intersection1.getPoint().getY() << ") , (1,1)";
                         }
                         cout << " on " << intersection1.getSide() << "\n";
                     }
@@ -105,22 +105,27 @@ void scanPoint(Point *point) {
 
 Intersection findIntersection(Point *subject) {
     Intersection intersection;
+    float y = 1.0;
+    float x = 1.0;
     if(subject->getY() > 0) {
         if(subject->getX() < 0) { // if x is negative
             if (subject->getY() < subject->getAbsoluteX()) { // left side intersection
                 intersection.setSide(LEFT);
+                x = -1.0;
+                y = x * (subject->getY()/subject->getX());
             } else if(subject->getY() > subject->getAbsoluteX()) { //top intersection in negative abscissa
                 intersection.setSide(NEGATIVE_TOP);
+                x = y / (subject->getY()/subject->getX());
             }
         } else { // if x is positive
             if (subject->getY() < subject->getX()) { // right side intersection
                 intersection.setSide(RIGHT);
+                y = x * (subject->getY()/subject->getX());
             } else if(subject->getY() > subject->getX()) { //top intersection in positive abscissa
                 intersection.setSide(POSITIVE_TOP);
+                x = y / (subject->getY()/subject->getX());
             }
         }
-        float y = 1.0;
-        float x = y / (subject->getY()/subject->getX());
         Point point;
         point.setX(x);
         point.setY(y);
