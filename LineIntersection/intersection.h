@@ -9,17 +9,20 @@
 #ifndef LineIntersection_intersection_h
 #define LineIntersection_intersection_h
 
-#include <assert.h>
+#include <string>
 #include "point.h"
 
-enum Side {LEFT, RIGHT, TOP};
+using namespace std;
+
+enum Side {LEFT, RIGHT, POSITIVE_TOP, NEGATIVE_TOP, NONE};
+
 class Intersection {
     private:
         Point _point;
         Side _side;
     public:
         Intersection() {
-            _side = TOP;
+            _side = NONE;
         }
     
         Intersection(Point point, Side side) {
@@ -31,8 +34,29 @@ class Intersection {
             return _point;
         }
     
-        Side getSide() {
-            return _side;
+        string getSide() {
+            string side;
+            switch (_side) {
+                case 0:
+                    side = "Left";
+                    break;
+                case 1:
+                    side = "Right";
+                    break;
+                case 2:
+                    side = "Positive Top";
+                    break;
+                case 3:
+                    side = "Negative Top";
+                    break;
+                case 4:
+                    side = "None";
+                    break;
+                default:
+                    side = "Invalid";
+                    break;
+            }
+            return side;
         }
     
         void setPoint(Point point) {

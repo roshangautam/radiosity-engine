@@ -11,39 +11,39 @@
 #include <math.h>
 
 class Point {
-private:
-    float _x, _y;
-    
-public:
-    Point() {
-        _x = 0.0;
-        _y = 0.0;
-    }
-    
-    Point(float abscissa, float ordinate) {
-        _x = abscissa;
-        _y = ordinate;
-    }
-    
-    float getX() {
-        return _x;
-    }
-    
-    float getAbsoluteX() {
-        return fabs(_x);
-    }
-    
-    float getY() {
-        return _y;
-    }
-    
-    void setX(float abscissa) {
-        _x = abscissa;
-    }
-    
-    void setY(float ordinate) {
-        _y = ordinate;
-    }
+    private:
+        float _x, _y;
+        
+    public:
+        Point() {
+            _x = 0.0;
+            _y = 0.0;
+        }
+        
+        Point(float abscissa, float ordinate) {
+            _x = abscissa;
+            _y = ordinate;
+        }
+        
+        float getX() {
+            return _x;
+        }
+        
+        float getAbsoluteX() {
+            return fabs(_x);
+        }
+        
+        float getY() {
+            return _y;
+        }
+        
+        void setX(float abscissa) {
+            _x = abscissa;
+        }
+        
+        void setY(float ordinate) {
+            _y = ordinate;
+        }
 };
 
 #endif
