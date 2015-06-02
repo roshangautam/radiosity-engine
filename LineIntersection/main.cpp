@@ -41,8 +41,21 @@ int main(int argc, const char * argv[]) {
                     scanPoint(&point2);
                     intersection = findIntersection(&point1);
                     intersection1 = findIntersection(&point2);
-                    if((intersection.getSide() == "Negative Top" && intersection1.getSide() == "Positive Top") || (intersection.getSide() == "Positive Top" && intersection1.getSide() == "Negative Top")) {
-                        cout << "Coordinates of intersecting segment are:(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (" << intersection1.getPoint().getX() << "," << intersection1.getPoint().getY() << ") on " << intersection.getSide() << " and " << intersection1.getSide() << "\n";
+                    if((intersection.getSide() == "Negative Top" && intersection1.getSide() == "Positive Top") ||
+                       (intersection.getSide() == "Positive Top" && intersection1.getSide() == "Negative Top")) {
+                        cout << "Coordinates of intersecting segment are:("
+                            << intersection.getPoint().getX()
+                            << ","
+                            << intersection.getPoint().getY()
+                            << ") , ("
+                            << intersection1.getPoint().getX()
+                            << ","
+                            << intersection1.getPoint().getY()
+                            << ") on "
+                            << intersection.getSide()
+                            << " and "
+                            << intersection1.getSide()
+                            << "\n";
                     } else {
                         cout << "Coordinates of intersecting segment are:";
                         if(intersection.getSide() == "Left") {
