@@ -47,5 +47,5 @@ public:
     void setZ(float applicate) {
         _z = applicate;
     }
-}
+};
 #endif
