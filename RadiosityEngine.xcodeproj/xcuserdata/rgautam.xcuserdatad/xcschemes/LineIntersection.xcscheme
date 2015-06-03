@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E99B28461B1D1595009647A0"
-               BuildableName = "LineIntersection"
-               BlueprintName = "LineIntersection"
-               ReferencedContainer = "container:LineIntersection.xcodeproj">
+               BuildableName = "RadiosityEngine"
+               BlueprintName = "RadiosityEngine"
+               ReferencedContainer = "container:RadiosityEngine.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E99B28461B1D1595009647A0"
-            BuildableName = "LineIntersection"
-            BlueprintName = "LineIntersection"
-            ReferencedContainer = "container:LineIntersection.xcodeproj">
+            BuildableName = "RadiosityEngine"
+            BlueprintName = "RadiosityEngine"
+            ReferencedContainer = "container:RadiosityEngine.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -53,9 +53,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E99B28461B1D1595009647A0"
-            BuildableName = "LineIntersection"
-            BlueprintName = "LineIntersection"
-            ReferencedContainer = "container:LineIntersection.xcodeproj">
+            BuildableName = "RadiosityEngine"
+            BlueprintName = "RadiosityEngine"
+            ReferencedContainer = "container:RadiosityEngine.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E99B28461B1D1595009647A0"
-            BuildableName = "LineIntersection"
-            BlueprintName = "LineIntersection"
-            ReferencedContainer = "container:LineIntersection.xcodeproj">
+            BuildableName = "RadiosityEngine"
+            BlueprintName = "RadiosityEngine"
+            ReferencedContainer = "container:RadiosityEngine.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -24,7 +24,7 @@
 
 /* Begin PBXFileReference section */
 		E92928D81B1D229B009F3AE8 /* point.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = point.h; sourceTree = "<group>"; };
-		E99B28471B1D1595009647A0 /* LineIntersection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LineIntersection; sourceTree = BUILT_PRODUCTS_DIR; };
+		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		E99B284A1B1D1595009647A0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E9E5DCB61B1D2BF100D3EBCA /* intersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intersection.h; sourceTree = "<group>"; };
 		E9E5DCB71B1E110600D3EBCA /* 3dpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 3dpoint.h; sourceTree = "<group>"; };
@@ -45,7 +45,7 @@
 		E99B283E1B1D1595009647A0 = {
 			isa = PBXGroup;
 			children = (
-				E99B28491B1D1595009647A0 /* LineIntersection */,
+				E99B28491B1D1595009647A0 /* RadiosityEngine */,
 				E99B28481B1D1595009647A0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,12 +53,12 @@
 		E99B28481B1D1595009647A0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E99B28471B1D1595009647A0 /* LineIntersection */,
+				E99B28471B1D1595009647A0 /* RadiosityEngine */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E99B28491B1D1595009647A0 /* LineIntersection */ = {
+		E99B28491B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXGroup;
 			children = (
 				E99B284A1B1D1595009647A0 /* main.cpp */,
@@ -67,15 +67,16 @@
 				E9E5DCB71B1E110600D3EBCA /* 3dpoint.h */,
 				E9E5DCB81B1E140400D3EBCA /* 3dintersection.h */,
 			);
+			name = RadiosityEngine;
 			path = LineIntersection;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E99B28461B1D1595009647A0 /* LineIntersection */ = {
+		E99B28461B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E99B284E1B1D1595009647A0 /* Build configuration list for PBXNativeTarget "LineIntersection" */;
+			buildConfigurationList = E99B284E1B1D1595009647A0 /* Build configuration list for PBXNativeTarget "RadiosityEngine" */;
 			buildPhases = (
 				E99B28431B1D1595009647A0 /* Sources */,
 				E99B28441B1D1595009647A0 /* Frameworks */,
@@ -85,9 +86,9 @@
 			);
 			dependencies = (
 			);
-			name = LineIntersection;
+			name = RadiosityEngine;
 			productName = LineIntersection;
-			productReference = E99B28471B1D1595009647A0 /* LineIntersection */;
+			productReference = E99B28471B1D1595009647A0 /* RadiosityEngine */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -104,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E99B28421B1D1595009647A0 /* Build configuration list for PBXProject "LineIntersection" */;
+			buildConfigurationList = E99B28421B1D1595009647A0 /* Build configuration list for PBXProject "RadiosityEngine" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -116,7 +117,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E99B28461B1D1595009647A0 /* LineIntersection */,
+				E99B28461B1D1595009647A0 /* RadiosityEngine */,
 			);
 		};
 /* End PBXProject section */
@@ -213,21 +214,21 @@
 		E99B284F1B1D1595009647A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RadiosityEngine;
 			};
 			name = Debug;
 		};
 		E99B28501B1D1595009647A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RadiosityEngine;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E99B28421B1D1595009647A0 /* Build configuration list for PBXProject "LineIntersection" */ = {
+		E99B28421B1D1595009647A0 /* Build configuration list for PBXProject "RadiosityEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E99B284C1B1D1595009647A0 /* Debug */,
@@ -236,7 +237,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E99B284E1B1D1595009647A0 /* Build configuration list for PBXNativeTarget "LineIntersection" */ = {
+		E99B284E1B1D1595009647A0 /* Build configuration list for PBXNativeTarget "RadiosityEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E99B284F1B1D1595009647A0 /* Debug */,
