@@ -22,7 +22,7 @@ void scan3DPoint(ThreeDPoint *);
 
 int main(int argc, const char * argv[]) {
     Point point1, point2;
-    ThreeDPoint point;
+    ThreeDPoint threeDPoint;
     Intersection intersection, intersection1;
     char c;
     cout << "Line Intersection Program - Solid Modeling CS6413 !!! \n";
@@ -111,7 +111,7 @@ int main(int argc, const char * argv[]) {
             case '3':
             {
                 cout << "Enter Coordinates for 3D point!\n";
-                scan3DPoint(&point);
+                scan3DPoint(&threeDPoint);
                 intersection = findIntersection(&point1);
                 cout << "Coordinates of intersecting segment are:";
                 if(intersection.getSide() == "Left") {
@@ -188,6 +188,51 @@ Intersection findIntersection(Point *subject) {
         point.setX(x);
         point.setY(y);
         intersection.setPoint(point);
+    }
+    return intersection;
+}
+
+ThreeDIntersection findIntersection(ThreeDPoint *subject) {
+    ThreeDIntersection intersection;
+    float x = 1.0;
+    float y = 1.0;
+    float z = 1.0;
+    if(subject->getY() > 0) {
+        if(subject->getY() < (-(subject->getZ())) &&
+           subject->getY() < subject->getZ()) {
+            if (subject->getX() < 0 &&
+                subject->getX() > -1) {
+                intersection.setIntersectingPlane(LEFT_PLANE);
+                x = -1.0;
+                //y = ?
+                //z = ?
+            } else if(subject->getX() > 0 &&
+                      subject->getX() < -1) {
+                intersection.setIntersectingPlane(RIGHT_PLANE);
+                x = 1.0;
+                //y = ?
+                //z = ?
+            }
+        } else if(subject->getY() < subject->getX() &&
+                  subject->getY() < (-(subject->getX()))) {
+            if (subject->getZ() > 0 &&
+                subject->getZ() < 1) {
+                intersection.setIntersectingPlane(FRONT);
+                z = 1.0;
+                //x = ?
+                //y = ?
+            } else if(subject->getZ() < 0 &&
+                      subject->getZ() > -1) {
+                intersection.setIntersectingPlane(BACK);
+                z = -1.0;
+            }
+        } else if(subject->getZ() < (-(subject->getX())) &&
+                  subject->getZ() < subject->getX() &&
+                  (-(subject->getZ())) < subject->getX() &&
+                  (-(subject->getZ())) < (-subject->getX())){
+            intersection.setIntersectingPlane(TOP);
+            y = 1.0;
+        }
     }
     return intersection;
 }
