@@ -27,6 +27,8 @@
 		E99B28471B1D1595009647A0 /* LineIntersection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LineIntersection; sourceTree = BUILT_PRODUCTS_DIR; };
 		E99B284A1B1D1595009647A0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		E9E5DCB61B1D2BF100D3EBCA /* intersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = intersection.h; sourceTree = "<group>"; };
+		E9E5DCB71B1E110600D3EBCA /* 3dpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 3dpoint.h; sourceTree = "<group>"; };
+		E9E5DCB81B1E140400D3EBCA /* 3dintersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = 3dintersection.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +64,8 @@
 				E99B284A1B1D1595009647A0 /* main.cpp */,
 				E92928D81B1D229B009F3AE8 /* point.h */,
 				E9E5DCB61B1D2BF100D3EBCA /* intersection.h */,
+				E9E5DCB71B1E110600D3EBCA /* 3dpoint.h */,
+				E9E5DCB81B1E140400D3EBCA /* 3dintersection.h */,
 			);
 			path = LineIntersection;
 			sourceTree = "<group>";
