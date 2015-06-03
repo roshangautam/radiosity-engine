@@ -1,2 +1,2 @@
 # line-intersection
-First Assignment - Solid Modeling CS6413
+Solid Modeling CS6413 - Radiosity Engine
