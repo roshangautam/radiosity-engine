@@ -19,11 +19,13 @@ using namespace std;
 void scanPoint(Point *);
 Intersection findIntersection(Point *);
 void scan3DPoint(ThreeDPoint *);
+ThreeDIntersection findThreeDIntersection(ThreeDPoint *);
 
 int main(int argc, const char * argv[]) {
     Point point1, point2;
     ThreeDPoint threeDPoint;
     Intersection intersection, intersection1;
+    ThreeDIntersection threeDIntersection;
     char c;
     cout << "Line Intersection Program - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
@@ -112,18 +114,15 @@ int main(int argc, const char * argv[]) {
             {
                 cout << "Enter Coordinates for 3D point!\n";
                 scan3DPoint(&threeDPoint);
-                intersection = findIntersection(&point1);
+                threeDIntersection = findThreeDIntersection(&threeDPoint);
                 cout << "Coordinates of intersecting segment are:";
-                if(intersection.getSide() == "Left") {
-                    cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (-1,1)";
-                } else if(intersection.getSide() == "Right") {
-                    cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (1,1)";
-                } else if(intersection.getSide() == "Negative Top") {
-                    cout << "(-1,1) , (" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ")";
-                } else if(intersection.getSide() == "Positive Top") {
-                    cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ") , (1,1)";
-                }
-                cout << " on " << intersection.getSide() << "\n\n";
+                cout << "(" << threeDIntersection.getThreeDPoint().getX()
+                    << ","
+                    << threeDIntersection.getThreeDPoint().getY()
+                    << ","
+                    << threeDIntersection.getThreeDPoint().getZ()
+                    << ")"
+                    << " on " << threeDIntersection.getHumanReadableIntersectingPlane() << "\n\n";
             }
                 break;
             case 'q':
@@ -165,9 +164,9 @@ Intersection findIntersection(Point *subject) {
     Intersection intersection;
     float y = 1.0;
     float x = 1.0;
-    if(subject->getY() > 0) {
+    if(subject->getY() > 1) {
         if(subject->getX() < 0) { // if x is negative
-            if (subject->getY() < (-(subject->getX()))) { // left side intersection
+            if (subject->getY() <= (-(subject->getX()))) { // left side intersection
                 intersection.setSide(LEFT);
                 x = -1.0;
                 y = x * (subject->getY()/subject->getX());
@@ -176,7 +175,7 @@ Intersection findIntersection(Point *subject) {
                 x = y / (subject->getY()/subject->getX());
             }
         } else { // if x is positive
-            if (subject->getY() < subject->getX()) { // right side intersection
+            if (subject->getY() <= subject->getX()) { // right side intersection
                 intersection.setSide(RIGHT);
                 y = x * (subject->getY()/subject->getX());
             } else if(subject->getY() > subject->getX()) { //top intersection in positive abscissa
@@ -188,51 +187,61 @@ Intersection findIntersection(Point *subject) {
         point.setX(x);
         point.setY(y);
         intersection.setPoint(point);
+    } else if (y > 0 && y < 1) {
+        cout << "Snap !!! Practically this is not possible. Please try with a different set of coordinates.";
     }
     return intersection;
 }
 
-ThreeDIntersection findIntersection(ThreeDPoint *subject) {
+ThreeDIntersection findThreeDIntersection(ThreeDPoint *subject) {
     ThreeDIntersection intersection;
     float x = 1.0;
     float y = 1.0;
     float z = 1.0;
-    if(subject->getY() > 0) {
-        if(subject->getY() < (-(subject->getZ())) &&
-           subject->getY() < subject->getZ()) {
-            if (subject->getX() < 0 &&
-                subject->getX() > -1) {
+    float t = 0.0;
+    if(subject->getY() > 1) {
+        if((subject->getY() <= (-(subject->getZ())) ||
+           subject->getY() <= subject->getZ()) &&
+           (subject->getY() <= subject->getX() ||
+           subject->getY() <= (-(subject->getX())))) {
+            if (subject->getX() < 0) {
                 intersection.setIntersectingPlane(LEFT_PLANE);
                 x = -1.0;
-                //y = ?
-                //z = ?
-            } else if(subject->getX() > 0 &&
-                      subject->getX() < -1) {
+                t = (subject->getX() - 1)/subject->getX();
+                y = (1-t)*subject->getY();
+                z = (1-t)*subject->getZ();
+            } else if(subject->getX() >= 0) {
                 intersection.setIntersectingPlane(RIGHT_PLANE);
-                x = 1.0;
-                //y = ?
-                //z = ?
-            }
-        } else if(subject->getY() < subject->getX() &&
-                  subject->getY() < (-(subject->getX()))) {
-            if (subject->getZ() > 0 &&
-                subject->getZ() < 1) {
+                t = (subject->getX() - 1)/subject->getX();
+                cout << t;
+                y = (1-t)*subject->getY();
+                z = (1-t)*subject->getZ();
+            } else if (subject->getZ() >= 0) {
                 intersection.setIntersectingPlane(FRONT);
-                z = 1.0;
-                //x = ?
-                //y = ?
-            } else if(subject->getZ() < 0 &&
-                      subject->getZ() > -1) {
+                t = (subject->getZ() - 1)/subject->getZ();
+                y = (1-t)*subject->getY();
+                x = (1-t)*subject->getX();
+            } else if(subject->getZ() < 0) {
                 intersection.setIntersectingPlane(BACK);
                 z = -1.0;
+                t = (subject->getZ() - 1)/subject->getZ();
+                y = (1-t)*subject->getY();
+                x = (1-t)*subject->getX();
             }
-        } else if(subject->getZ() < (-(subject->getX())) &&
-                  subject->getZ() < subject->getX() &&
-                  (-(subject->getZ())) < subject->getX() &&
-                  (-(subject->getZ())) < (-subject->getX())){
+        } else if((subject->getZ() <= (-(subject->getX())) &&
+                  subject->getZ() <= subject->getX())) {
             intersection.setIntersectingPlane(TOP);
-            y = 1.0;
+            t = (subject->getY() - 1)/subject->getY();
+            z = (1-t)*subject->getZ();
+            x = (1-t)*subject->getX();
         }
+    } else if (y > 0 && y < 1) {
+        cout << "Snap !!! Practically this is not possible. Please try with a different set of coordinates.";
     }
+    ThreeDPoint point;
+    point.setX(x);
+    point.setY(y);
+    point.setZ(z);
+    intersection.setThreeDPoint(point);
     return intersection;
 }

@@ -39,7 +39,7 @@ public:
         return _intersectingPlane;
     }
     
-    string getHumanReadableIntersectionPlane() {
+    string getHumanReadableIntersectingPlane() {
         switch (_intersectingPlane) {
             case 0:
                 return "Top";
