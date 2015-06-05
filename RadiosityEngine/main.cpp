@@ -115,14 +115,19 @@ int main(int argc, const char * argv[]) {
                 cout << "Enter Coordinates for 3D point!\n";
                 scan3DPoint(&threeDPoint);
                 threeDIntersection = findThreeDIntersection(&threeDPoint);
-                cout << "Coordinates of intersecting segment are:";
-                cout << "(" << threeDIntersection.getThreeDPoint().getX()
+                if(threeDIntersection.getHumanReadableIntersectingPlane() != "None") {
+                    cout << "Coordinates of intersecting segment are:";
+                    cout << "(" << threeDIntersection.getThreeDPoint().getX()
                     << ","
                     << threeDIntersection.getThreeDPoint().getY()
                     << ","
                     << threeDIntersection.getThreeDPoint().getZ()
                     << ")"
                     << " on " << threeDIntersection.getHumanReadableIntersectingPlane() << "\n\n";
+                } else {
+                    cout << "Invalid coordinates provided. Please try again with a different set of coordinates.\n";
+                }
+
             }
                 break;
             case 'q':
@@ -194,44 +199,40 @@ Intersection findIntersection(Point *subject) {
 ThreeDIntersection findThreeDIntersection(ThreeDPoint *subject) {
     ThreeDIntersection intersection;
     float x, y, z, t;
-    if(subject->getY() >= 0) {
+    if(subject->getY() >= 0) { // make sure y is always greater than 0 i.e the subject is above the light source
         if((subject->getY() <= (-(subject->getZ())) ||
-           subject->getY() <= subject->getZ()) ||
+           subject->getY() <= subject->getZ()) &&
            (subject->getY() <= subject->getX() ||
-           subject->getY() <= (-(subject->getX())))) {
-            if (subject->getX() < 0) {
+           subject->getY() <= (-(subject->getX())))) { // Inequalities to check if the point lies on one of the sides
+            if (subject->getX() < 0) { // If x is negative its the left side
                 intersection.setIntersectingPlane(LEFT_PLANE);
                 x = -1.0;
                 t = x/subject->getX();
-                cout << t;
                 y = (t)*subject->getY();
                 z = (t)*subject->getZ();
-            } else if(subject->getX() >= 0) {
+            } else if(subject->getX() >= 0) { //If x is positive its the right side
                 intersection.setIntersectingPlane(RIGHT_PLANE);
                 x = 1.0;
                 t = x/subject->getX();
-                cout << t;
                 y = (t)*subject->getY();
                 z = (t)*subject->getZ();
-            } else if (subject->getZ() >= 0) {
+            } else if (subject->getZ() >= 0) { //If z is positive its the front side
                 intersection.setIntersectingPlane(FRONT);
                 z = 1.0;
                 t = z/subject->getZ();
-                cout << t;
                 y = (t)*subject->getY();
                 x = (t)*subject->getX();
-            } else if(subject->getZ() < 0) {
+            } else if(subject->getZ() < 0) { //if z is negative its the back side
                 intersection.setIntersectingPlane(BACK);
                 z = -1.0;
                 t = z/subject->getZ();
-                                cout << t;
                 y = (t)*subject->getY();
                 x = (t)*subject->getX();
             }
-        } else {
+        } else { // else its on top
             intersection.setIntersectingPlane(TOP);
             y = 1.0;
-            t = 1 - y/subject->getY();
+            t = y/subject->getY();
             z = (t)*subject->getZ();
             x = (t)*subject->getX();
         }
