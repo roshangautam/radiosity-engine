@@ -15,7 +15,7 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    Point point1;
+    Point point;
     Intersection intersection;
     char c;
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -38,9 +38,9 @@ int main(int argc, const char * argv[]) {
                 case '1':
                 {
                     cout << "Enter Coordinates for the point!\n";
-                    point1.readInput();
-                    if (point1.getY() > 0 && (point1.getX() > 1 || point1.getX() < -1) ) {
-                        intersection.intersect(&point1);
+                    point.readInput();
+                    if (point.getY() > 0 && (point.getX() > 1 || point.getX() < -1) ) {
+                        intersection.intersect(&point);
                         cout << "Coordinates of intersecting segment are:";
                         cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ")";
                         cout << " on " << intersection.getHumanReadableSide() << "\n\n";
