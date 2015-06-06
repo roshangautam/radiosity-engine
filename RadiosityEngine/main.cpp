@@ -14,8 +14,6 @@
 
 using namespace std;
 
-Intersection findIntersection(Point *);
-
 int main(int argc, const char * argv[]) {
     Point point1;
     Intersection intersection;
