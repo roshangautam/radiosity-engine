@@ -42,13 +42,13 @@ public:
         string side;
         switch (_side) {
             case 0:
-                side = "Left";
+                side = "LEFT";
                 break;
             case 1:
-                side = "Right";
+                side = "RIGHT";
                 break;
             case 2:
-                side = "Top";
+                side = "TOP";
                 break;
             case 3:
                 side = "Error:Invalid Coordinate provided";

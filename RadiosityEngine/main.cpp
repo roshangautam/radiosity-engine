@@ -17,7 +17,7 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
-    char c;
+    char c = '1';
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
     cout << "1. Light Source Origin is always (0,0)\n";
@@ -29,9 +29,9 @@ int main(int argc, const char * argv[]) {
         cout << "(1)Enter Coordinates for a 2D Point\n";
         cout << "(2)Enter Coordinates for a 2D line segment\n";
         cout << "(Q)Quit\n";
+        cout << "[Select]:";
         cin >> c;
-        if (cin.get() != '\n') // Look at the next character
-        {
+        if(cin.get() != '\n') { // Look at the next character
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input stream
             cout << "Invalid Option\n";
         } else {
