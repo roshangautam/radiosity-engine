@@ -24,8 +24,6 @@
 
 /* Begin PBXFileReference section */
 		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
-		E9EECE571B1FA8FE00C07F08 /* 3dintersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = 3dintersection.h; path = RadiosityEngine/3dintersection.h; sourceTree = SOURCE_ROOT; };
-		E9EECE581B1FA8FE00C07F08 /* 3dpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = 3dpoint.h; path = RadiosityEngine/3dpoint.h; sourceTree = SOURCE_ROOT; };
 		E9EECE591B1FA8FE00C07F08 /* intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intersection.h; path = RadiosityEngine/intersection.h; sourceTree = SOURCE_ROOT; };
 		E9EECE5A1B1FA8FE00C07F08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = RadiosityEngine/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9EECE5B1B1FA8FE00C07F08 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = RadiosityEngine/point.h; sourceTree = SOURCE_ROOT; };
@@ -61,8 +59,6 @@
 		E99B28491B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXGroup;
 			children = (
-				E9EECE571B1FA8FE00C07F08 /* 3dintersection.h */,
-				E9EECE581B1FA8FE00C07F08 /* 3dpoint.h */,
 				E9EECE591B1FA8FE00C07F08 /* intersection.h */,
 				E9EECE5A1B1FA8FE00C07F08 /* main.cpp */,
 				E9EECE5B1B1FA8FE00C07F08 /* point.h */,

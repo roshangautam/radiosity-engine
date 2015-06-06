@@ -14,58 +14,83 @@
 
 using namespace std;
 
-enum Side {LEFT, RIGHT, POSITIVE_TOP, NEGATIVE_TOP, NONE};
+enum Side {LEFT, RIGHT, TOP, NONE};
 
 class Intersection {
-    private:
-        Point _point;
-        Side _side;
-    public:
-        Intersection() {
-            _side = NONE;
-        }
+private:
+    Point _point;
+    Side _side;
+public:
+    Intersection() {
+        _side = NONE;
+    }
+
+    Intersection(Point point, Side side) {
+        _point = point;
+        _side = side;
+    }
+
+    Point getPoint() {
+        return _point;
+    }
     
-        Intersection(Point point, Side side) {
-            _point = point;
-            _side = side;
-        }
+    Side getSide() {
+        return _side;
+    }
     
-        Point getPoint() {
-            return _point;
+    string getHumanReadableSide() {
+        string side;
+        switch (_side) {
+            case 0:
+                side = "Left";
+                break;
+            case 1:
+                side = "Right";
+                break;
+            case 2:
+                side = "Top";
+                break;
+            case 3:
+                side = "None";
+                break;
+            default:
+                side = "Invalid";
+                break;
         }
+        return side;
+    }
+
+    void setPoint(Point point) {
+        _point = point;
+    }
+
+    void setSide(Side side) {
+        _side = side;
+    }
     
-        string getSide() {
-            string side;
-            switch (_side) {
-                case 0:
-                    side = "Left";
-                    break;
-                case 1:
-                    side = "Right";
-                    break;
-                case 2:
-                    side = "Positive Top";
-                    break;
-                case 3:
-                    side = "Negative Top";
-                    break;
-                case 4:
-                    side = "None";
-                    break;
-                default:
-                    side = "Invalid";
-                    break;
+    
+    void intersect(Point *pointTwo) {
+        float t;
+        if(pointTwo->getY() >= 0) {
+            if(pointTwo->getY() > (-(pointTwo->getX())) &&
+               pointTwo->getY() > pointTwo->getX()) {  // intersection on top
+                _point.setY(1.0);
+                t = _point.getY() / pointTwo->getY();
+                _point.setX(t * pointTwo->getX());
+                _side = TOP;
+            } else if(pointTwo->getY() <= (-(pointTwo->getX()))) { //intersection on left
+                _point.setX(-1.0);
+                t = _point.getX() / pointTwo->getX();
+                _point.setY(t * pointTwo->getY());
+                _side = LEFT;
+            } else if(pointTwo->getY() <= pointTwo->getX()) { //intersection on right
+                _point.setX(1.0);
+                t = _point.getX() / pointTwo->getX();
+                _point.setY(t * pointTwo->getY());
+                _side = RIGHT;
             }
-            return side;
         }
-    
-        void setPoint(Point point) {
-            _point = point;
-        }
-    
-        void setSide(Side side) {
-            _side = side;
-        }
+    }
 };
 
 #endif

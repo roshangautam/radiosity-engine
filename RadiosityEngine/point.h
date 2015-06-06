@@ -8,7 +8,10 @@
 
 #ifndef LineIntersection_point_h
 #define LineIntersection_point_h
+
 #include <math.h>
+
+using namespace std;
 
 class Point {
     private:
@@ -43,6 +46,13 @@ class Point {
         
         void setY(float ordinate) {
             _y = ordinate;
+        }
+    
+        void readInput() {
+            cout << "Enter x:";
+            cin >> _x;
+            cout << "Enter y:";
+            cin >> _y;
         }
 };
 
