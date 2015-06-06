@@ -9,8 +9,8 @@
 #include <iostream>
 #include <string>
 
-#include "point.h"
 #include "intersection.h"
+#include "3dintersection.h"
 
 using namespace std;
 
@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
         cout << "\nOptions:\n";
         cout << "(1)Enter Coordinates for a 2D Point\n";
         cout << "(2)Enter Coordinates for a 2D line segment\n";
+        cout << "(3)Enter Coordinates for a Vertex (3D)\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
