@@ -15,37 +15,65 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    Point point;
-    Intersection intersection;
+    Point point, secondPoint;
+    Intersection intersection, secondIntersection;
     char c;
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
     cout << "1. Light Source Origin is always (0,0)\n";
     cout << "2. Height of hemi-square = 1 i.e y = 1 \n";
     cout << "3. Left End of hemi-square from origin = -1 i.e x = -1 \n";
-    cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n\n";
+    cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n";
     while(1) {
-        cout << "Options:\n";
+        cout << "\nOptions:\n";
         cout << "(1)Enter Coordinates for a 2D Point\n";
+        cout << "(2)Enter Coordinates for a 2D line segment\n";
         cout << "(Q)Quit\n";
         cin >> c;
         if (cin.get() != '\n') // Look at the next character
         {
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input stream
-            cout << "Invalid Option\n\n";
+            cout << "Invalid Option\n";
         } else {
             switch (c) {
                 case '1':
                 {
                     cout << "Enter Coordinates for the point!\n";
-                    point.readInput();
+                    point.read();
                     if (point.getY() > 0 && (point.getX() > 1 || point.getX() < -1) ) {
                         intersection.intersect(&point);
-                        cout << "Coordinates of intersecting segment are:";
-                        cout << "(" << intersection.getPoint().getX() << "," << intersection.getPoint().getY() << ")";
-                        cout << " on " << intersection.getHumanReadableSide() << "\n\n";
+                        cout << "Coordinates of intersection are:";
+                        intersection.simplePrint();
                     } else {
-                        cout << "Invalid Coordinates provided.\nx must be greater than 1 and less than -1.\ny must be greater than 1.\nPlease try again.\n\n";
+                        cout << "Invalid Coordinates provided.\nx must be greater than 1 and less than -1.\ny must be greater than 1.\nPlease try again.\n";
+                    }
+                }
+                    break;
+                case '2':
+                {
+                    cout << "Enter Coordinates for first point!\n";
+                    point.read();
+                    cout << "Enter Coordinates for second point!\n";
+                    secondPoint.read();
+                    intersection.intersect(&point);
+                    secondIntersection.intersect(&secondPoint);
+                    if(intersection.getSide() == secondIntersection.getSide()) {
+                        cout << "Coordinates of intersecting segment are:";
+                        intersection.getPoint().print();
+                        cout << ",";
+                        secondIntersection.getPoint().print();
+                        cout << " on " << intersection.getHumanReadableSide() << "\n";
+                    } else {
+                        cout << "Coordinates of intersecting segment are:";
+                        intersection.print();
+                        if(intersection.getSide() == 0) {
+                            cout << " AND (-1,1),(1,1) on Top AND ";
+                        } else if(intersection.getSide() == 1) {
+                            cout << " AND (1,1),(-1,1) on Top AND ";
+                        } else {
+                            cout << " AND ";
+                        }
+                        secondIntersection.print();
                     }
                 }
                     break;

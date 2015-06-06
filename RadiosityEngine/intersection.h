@@ -51,7 +51,7 @@ public:
                 side = "Top";
                 break;
             case 3:
-                side = "None";
+                side = "Error:Invalid Coordinate provided";
                 break;
             default:
                 side = "Invalid";
@@ -89,7 +89,31 @@ public:
                 _point.setY(t * pointTwo->getY());
                 _side = RIGHT;
             }
+        } else {
+            _side = NONE;
         }
+    }
+    
+    void simplePrint() {
+        cout << "(" << _point.getX() << "," << _point.getY() << ")";
+        cout << " on " << getHumanReadableSide() << "\n\n";
+    }
+    
+    void print() {
+        if(_side == 0) {  //left
+            _point.print();
+            cout << ",(-1,1)";
+        } else if(_side == 1) { //right
+            _point.print();
+            cout << ",(1,1)";
+        } else if(_side == 2 && _point.getX() < 0) { // on the negative side of top
+            cout << "(-1,1),";
+            _point.print();
+        } else if(_side == 2 && _point.getX() >= 0) { // on the positive side of top
+            _point.print();
+            cout << ",(1,1)";
+        }
+        cout << " on " << getHumanReadableSide();
     }
 };
 
