@@ -24,6 +24,12 @@ public:
         _z = applicate;
     }
     
+    void setCoordinates(float abscissa, float ordinate, float applicate) {
+        _x = abscissa;
+        _y = ordinate;
+        _z = applicate;
+    }
+    
     float getX() {
         return _x;
     }
@@ -46,6 +52,37 @@ public:
     
     void setZ(float applicate) {
         _z = applicate;
+    }
+    
+    //calculate and return dot product
+    float dot(Vertex vec) {
+        return _x * vec.getX() + _y * vec.getY() + _z * vec.getZ();
+    }
+    
+    //calculate and return cross product
+    Vertex cross(Vertex vec) {
+        return Vertex(_y * vec.getZ() - _z * vec.getY(),
+                      _z * vec.getX() - _x * vec.getZ(),
+                      _x * vec.getY() - _y * vec.getX());
+    }
+    
+    Vertex unit(Vertex vec) {
+        return Vertex(vec.getX() / sqrt(dot(Vertex(_x,_y,_z))),
+                      vec.getY() / sqrt(dot(Vertex(_x,_y,_z))),
+                      vec.getz() / sqrt(dot(Vertex(_x,_y,_z))));
+    }
+
+    void read() {
+        cout << "Enter x:";
+        cin >> _x;
+        cout << "Enter y:";
+        cin >> _y;
+        cout << "Enter z:";
+        cin >> _z;
+    }
+    
+    void print() {
+        cout << "(" << _x << "," << _y << "," << _z << ")";
     }
 };
 
