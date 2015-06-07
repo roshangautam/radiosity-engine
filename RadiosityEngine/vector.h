@@ -2,80 +2,175 @@
 //  vector.h
 //  RadiosityEngine
 //
-//  Created by Roshan Gautam on 6/7/15.
+//  Created by Roshan Gautam on 6/6/15.
 //  Copyright (c) 2015 Roshan Gautam. All rights reserved.
 //
 
-#ifndef RadiosityEngine_vector_h
-#define RadiosityEngine_vector_h
 
-#include <math.h>
+#ifndef Radiosit_yEngine_vector_h
+#define Radiosit_yEngine_vector_h
 
-class Vector3D
-{
-private:
-    float x, y, z;
+class Plane;
+class Line;
+
+class Vector {
+    float _x, _y, _z;
 public:
-    //default constructor
-    Vector3D(float X = 0, float Y = 0, float Z = 0)
-    {
-        x = X;
-        y = Y;
-        z = Z;
+    Vector() {
+        _x = 0.0;
+        _y = 0.0;
+        _z = 0.0;
     }
-    ~Vector3D(){};
+    
+    Vector(float abscissa, float ordinate, float applicate) {
+        _x = abscissa;
+        _y = ordinate;
+        _z = applicate;
+    }
+    
+    void setCoordinates(float abscissa, float ordinate, float applicate) {
+        _x = abscissa;
+        _y = ordinate;
+        _z = applicate;
+    }
+    
+    float getX() {
+        return _x;
+    }
+    
+    float getY() {
+        return _y;
+    }
+    
+    float getZ() {
+        return _z;
+    }
+    
+    void setX(float abscissa) {
+        _x = abscissa;
+    }
+    
+    void setY(float ordinate) {
+        _y = ordinate;
+    }
+    
+    void setZ(float applicate) {
+        _z = applicate;
+    }
     
     //calculate and return the magnitude of this vector
-    float GetMagnitude()
+    float getMagnitude()
     {
-        return sqrtf(x * x + y * y + z * z);
+        return sqrtf(_x * _x + _y * _y + _z * _z);
     }
     
     //multiply this vector by a scalar
-    Vector3D operator*(float num) const
+    Vector operator*(float num) const
     {
-        return Vector3D(x * num, y * num, z * num);
+        return Vector(_x * num, _y * num, _z * num);
     }
     
     //pass in a vector, pass in a scalar, return the product
-    friend Vector3D operator*(float num, Vector3D const &vec)
+    friend Vector operator*(float num, Vector const &vec)
     {
-        return Vector3D(vec.x * num, vec.y * num, vec.z * num);
+        return Vector(vec._x * num, vec._y * num, vec._z * num);
     }
     
     //add two vectors
-    Vector3D operator+(const Vector3D &vec) const
+    Vector operator+(const Vector &vec) const
     {
-        return Vector3D(x + vec.x, y + vec.y, z + vec.z);
+        return Vector(_x + vec._x, _y + vec._y, _z + vec._z);
     }
     
     //subtract two vectors
-    Vector3D operator-(const Vector3D &vec) const
+    Vector operator-(const Vector &vec) const
     {
-        return Vector3D(x - vec.x, y - vec.y, z - vec.z);
+        return Vector(_x - vec._x, _y - vec._y, _z - vec._z);
     }
     
     //normalize this vector
-    void normalizeVector3D()
+    void normalizeVector()
     {
-        float magnitude = sqrtf(x * x + y * y + z * z);
-        x /= magnitude;
-        y /= magnitude;
-        z /= magnitude;
+        float magnitude = getMagnitude();
+        _x /= magnitude;
+        _y /= magnitude;
+        _z /= magnitude;
     }
     
     //calculate and return dot product
-    float dotVector3D(const Vector3D &vec) const
-    {
-        return x * vec.x + y * vec.y + z * vec.z;
+    float dot(Vector vec) {
+        return _x * vec.getX() + _y * vec.getY() + _z * vec.getZ();
     }
     
     //calculate and return cross product
-    Vector3D crossVector3D(const Vector3D &vec) const
-    {
-        return Vector3D(y * vec.z - z * vec.y,
-                        z * vec.x - x * vec.z,
-                        x * vec.y - y * vec.x);
+    Vector cross(Vector vec) {
+        return Vector(_y * vec.getZ() - _z * vec.getY(),
+                      _z * vec.getX() - _x * vec.getZ(),
+                      _x * vec.getY() - _y * vec.getX());
+    }
+    
+    Vector unit() {
+        return Vector(_x / sqrt(dot(Vector(_x,_y,_z))),
+                      _y / sqrt(dot(Vector(_x,_y,_z))),
+                      _z / sqrt(dot(Vector(_x,_y,_z))));
+    }
+
+    void read() {
+        cout << "Enter x:";
+        cin >> _x;
+        cout << "Enter y:";
+        cin >> _y;
+        cout << "Enter z:";
+        cin >> _z;
+    }
+    
+    void print() {
+        cout << "(" << _x << "," << _y << "," << _z << ")";
+    }
+};
+
+class Plane {
+    Vector _vector;
+    Vector _normal;
+public:
+    
+    Plane() {
+        
+    }
+    
+    Plane(Vector vector, Vector normal) {
+        _vector = vector;
+        _normal = normal;
+    }
+    
+    Vector getVertex() {
+        return _vector;
+    }
+    
+    Vector getNormal() {
+        return _normal;
+    }
+};
+
+class Line {
+    Vector _point;
+    Vector _direction;
+public:
+    Line() {
+        
+    }
+    
+    Line(Vector point, Vector direction) {
+        _point = point;
+        _direction = direction;
+    }
+    
+    Vector getVertex() {
+        return _point;
+    }
+    
+    Vector getNormal() {
+        return _direction;
     }
 };
 

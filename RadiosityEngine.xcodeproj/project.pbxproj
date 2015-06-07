@@ -28,8 +28,7 @@
 		E9EECE5A1B1FA8FE00C07F08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = RadiosityEngine/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9EECE5B1B1FA8FE00C07F08 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = RadiosityEngine/point.h; sourceTree = SOURCE_ROOT; };
 		E9EECE611B23A15500C07F08 /* 3dintersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = 3dintersection.h; path = RadiosityEngine/3dintersection.h; sourceTree = SOURCE_ROOT; };
-		E9EECE621B23A15500C07F08 /* vertex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vertex.h; path = RadiosityEngine/vertex.h; sourceTree = SOURCE_ROOT; };
-		F05C9AED1B24A8210087502F /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vector.h; path = RadiosityEngine/vector.h; sourceTree = SOURCE_ROOT; };
+		E9EECE621B23A15500C07F08 /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vector.h; path = RadiosityEngine/vector.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,8 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				E9EECE611B23A15500C07F08 /* 3dintersection.h */,
-				E9EECE621B23A15500C07F08 /* vertex.h */,
-				F05C9AED1B24A8210087502F /* vector.h */,
+				E9EECE621B23A15500C07F08 /* vector.h */,
 			);
 			name = 3D;
 			sourceTree = "<group>";

@@ -17,7 +17,7 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
-    Vertex vertex;
+    Vector vertex;
     ThreeDIntersection threeDIntersection;
     char c = '1';
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -84,7 +84,7 @@ int main(int argc, const char * argv[]) {
                 {
                     cout << "Enter Coordinates of the Vertex\n";
                     vertex.read();
-                    threeDIntersection.intersect(&vertex);
+                    threeDIntersection.intersection(vertex);
                     cout << "Coordinates of intersection are:";
                     threeDIntersection.simplePrint();
                 }

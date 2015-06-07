@@ -11,7 +11,9 @@
 
 #include <string>
 #include <math.h>
-#include "vertex.h"
+
+#include "vector.h"
+
 using namespace std;
 
 enum Face {TOP_FACE, LEFT_FACE, RIGHT_FACE, FRONT_FACE, BACK_FACE, NA};
@@ -19,20 +21,20 @@ enum Face {TOP_FACE, LEFT_FACE, RIGHT_FACE, FRONT_FACE, BACK_FACE, NA};
 class ThreeDIntersection {
     
 private:
-    Vertex _vertex;
+    Vector _vector;
     Face _intersectingFace;
 public:
     ThreeDIntersection() {
         _intersectingFace = NA;
     }
     
-    ThreeDIntersection(Vertex Vertex, Face intersectingFace) {
-        _vertex = Vertex;
+    ThreeDIntersection(Vector Vector, Face intersectingFace) {
+        _vector = Vector;
         _intersectingFace = intersectingFace;
     }
     
-    Vertex getVertex() {
-        return _vertex;
+    Vector getVector() {
+        return _vector;
     }
     
     Face getIntersectingFace() {
@@ -64,67 +66,101 @@ public:
         }
     }
     
-    void setVertex(Vertex Vertex) {
-        _vertex = Vertex;
+    void setVector(Vector Vector) {
+        _vector = Vector;
     }
     
     void setIntersectingFace(Face intersectingFace) {
         _intersectingFace = intersectingFace;
     }
     
-    void intersect(Vertex *vertex) {
+    void intersect(Vector *vertex) {
         float t;
         if (vertex->getY() >= 0) {
-            if ((vertex->getY() < vertex->getZ() || vertex->getY() < (-(vertex->getZ()))) &&
-                (vertex->getX() < vertex->getZ() || vertex->getX() < (-(vertex->getZ())))) {
-                if(vertex->getX() >= 0) {
-                    _vertex.setX(1.0);
-                    t = _vertex.getX() / vertex->getX();
-                    _vertex.setY(t * vertex->getY());
-                    _vertex.setZ(t * vertex->getZ());
-                    _intersectingFace = RIGHT_FACE;
-                } else if(vertex->getX() < 0) {
-                    _vertex.setX(-1.0);
-                    t = _vertex.getX() / vertex->getX();
-                    _vertex.setY(t * vertex->getY());
-                    _vertex.setZ(t * vertex->getZ());
-                    _intersectingFace = LEFT_FACE;
-                }
-                if(vertex->getY() >= 0) {
-                     _vertex.setY(1.0);
-                    t = _vertex.getY() / vertex->getY();
-                    _vertex.setX(t * vertex->getX());
-                    _vertex.setZ(t * vertex->getZ());
-                    _intersectingFace = FRONT_FACE;
-                } else if(vertex->getY() < 0) {
-                     _vertex.setY(-1.0);
-                    t = _vertex.getY() / vertex->getY();
-                    _vertex.setX(t * vertex->getX());
-                    _vertex.setZ(t * vertex->getZ());
-                    _intersectingFace = BACK_FACE;
-                }
-            } else {
-                _vertex.setZ(1.0);
-                t = _vertex.getZ() / vertex->getZ();
-                _vertex.setX(t * vertex->getX());
-                _vertex.setY(t * vertex->getY());
-                _intersectingFace = TOP_FACE;
-            }
+            if((vertex->getY() <= (-(vertex->getZ())) ||
+                vertex->getY() <= vertex->getZ()) &&
+               (vertex->getY() <= vertex->getX() ||
+                vertex->getY() <= (-(vertex->getX())))) { // Inequalities to check if the point lies on one of the sides
+                   if (vertex->getX() < 0) { // If x is negative its the left side
+                       _intersectingFace =  LEFT_FACE;
+                       _vector.setX(-1.0);
+                       t = _vector.getX() / vertex->getX();
+                       _vector.setY(t * vertex->getY());
+                       _vector.setZ(t * vertex->getZ());
+                   } else if(vertex->getX() >= 0) { //If x is positive its the right side
+                       _intersectingFace = RIGHT_FACE;
+                       _vector.setX(1.0);
+                       t = _vector.getX() / vertex->getX();
+                       _vector.setY(t * vertex->getY());
+                       _vector.setZ(t * vertex->getZ());
+                   } else if (vertex->getZ() >= 0) { //If z is positive its the front side
+                       _intersectingFace = FRONT_FACE;
+                       _vector.setZ(1.0);
+                       t = _vector.getZ() / vertex->getZ();
+                       _vector.setX(t * vertex->getX());
+                       _vector.setY(t * vertex->getY());
+                   } else if(vertex->getZ() < 0) { //if z is negative its the back side
+                       _intersectingFace = BACK_FACE;
+                       _vector.setZ(-1.0);
+                       t = _vector.getZ() / vertex->getZ();
+                       _vector.setX(t * vertex->getX());
+                       _vector.setY(t * vertex->getY());
+                   }
+               } else { // else its on top
+                   _intersectingFace = TOP_FACE;
+                   _vector.setY(1.0);
+                   t = _vector.getY() / vertex->getY();
+                   _vector.setX(t * vertex->getX());
+                   _vector.setZ(t * vertex->getZ());
+               }
         }
     }
     
+    void intersection(Vector &vertex) {
+        float t;
+        Plane plane;
+        Line line;
+        if (vertex.getY() >= 0) {
+            if((vertex.getY() >= (-(vertex.getZ())) &&
+                vertex.getY() >= vertex.getZ()) &&
+               (vertex.getX() >= (-(vertex.getZ())) &&
+                vertex.getX() >= vertex.getZ())) {
+                _intersectingFace = TOP_FACE;
+            } else {
+                if(vertex.getX() >= 1) {
+                    _intersectingFace = RIGHT_FACE;
+                } else if(vertex.getX() <= -1) {
+                    _intersectingFace = LEFT_FACE;
+                }
+                if(vertex.getY() >= 1) {
+                    _intersectingFace = FRONT_FACE;
+                } else if(vertex.getY() <= -1) {
+                    _intersectingFace = BACK_FACE;
+                }
+            }
+            plane = getPlane(_intersectingFace);
+            line = getLine(vertex);
+            Vector diff = plane.getVertex() - line.getVertex();
+            t = diff.dot(plane.getNormal()) / line.getNormal().dot(plane.getNormal());
+            Vector intersection = line.getVertex() + Vector(t*line.getNormal().getX(), t*line.getNormal().getY(), t*line.getNormal().getZ());
+            _vector.setX(intersection.getX());
+            _vector.setY(intersection.getY());
+            _vector.setZ(intersection.getZ());
+        }
+
+    }
+    
     void simplePrint() {
-        cout << "(" << _vertex.getX() << "," << _vertex.getY() << "," << _vertex.getZ() << ")";
+        cout << "(" << _vector.getX() << "," << _vector.getY() << "," << _vector.getZ() << ")";
         cout << " on " << getHumanReadableIntersectingFace() << "\n\n";
     }
     
-    void getPlaneNormal(Face face) {
-        Vertex one,two,three, normal;
+    Plane getPlane(Face face) {
+        Vector one,two,three;
         if (face == TOP_FACE) {
             one.setCoordinates(1,1,1);
             two.setCoordinates(1,-1,1);
             three.setCoordinates(-1,-1,1);
-            cross()
         } else if(face == LEFT_FACE) {
             one.setCoordinates(-1,1,1);
             two.setCoordinates(-1,1,0);
@@ -135,14 +171,38 @@ public:
             three.setCoordinates(1,1,0);
         } else if(face == FRONT_FACE) {
             one.setCoordinates(1,1,1);
-            two.setCoordinates(1,-1,1);
-            three.setCoordinates(-1,-1,1);
+            two.setCoordinates(-1,1,1);
+            three.setCoordinates(-1,1,0);
         } else if(face == BACK_FACE) {
-            one.setCoordinates(1,1,1);
-            two.setCoordinates(1,-1,1);
-            three.setCoordinates(-1,-1,1);
+            one.setCoordinates(1,-1,1);
+            two.setCoordinates(-1,-1,1);
+            three.setCoordinates(-1,-1,0);
         }
+        Vector four = two - one;
+        Vector five = three - one;
+        Vector six = four.cross(five);
+        Vector normal = six.unit();
+        return Plane(one, normal);
     }
+    
+    Line getLine(Vector vector) {
+        Vector one;
+        Vector two = vector - one;
+        Vector direction = two.unit();
+        return Line(vector, direction);
+    }
+    
+//    function SameSide(p1,p2, a,b)
+//    cp1 = CrossProduct(b-a, p1-a)
+//    cp2 = CrossProduct(b-a, p2-a)
+//    if DotProduct(cp1, cp2) >= 0 then return true
+//        else return false
+//            
+//    function PointInTriangle(p, a,b,c)
+//    if SameSide(p,a, b,c) and SameSide(p,b, a,c)
+//        and SameSide(p,c, a,b) then return true
+//        else return false
+    
 };
 
 #endif
