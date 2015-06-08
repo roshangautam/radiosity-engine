@@ -77,7 +77,8 @@ public:
     void intersect(Vector *vertex) {  // parametric form approach
         float t;
         if (vertex->getY() >= 0) {
-            if (vertex->getY() < vertex->getZ()  &&
+            if (vertex->getY() > vertex->getZ()  &&
+                vertex->getY() > (-(vertex->getZ())) &&
                 (-(vertex->getX())) >= vertex->getZ() &&
                 (-(vertex->getX())) >= (-(vertex->getZ()))) { // LEFT_FACE
                 _intersectingFace =  LEFT_FACE;
@@ -85,7 +86,8 @@ public:
                 t = _vector.getX() / vertex->getX();
                 _vector.setY(t * vertex->getY());
                 _vector.setZ(t * vertex->getZ());
-            } else if(vertex->getY() < vertex->getZ() &&
+            } else if(vertex->getY() > vertex->getZ()  &&
+                      vertex->getY() > (-(vertex->getZ())) &&
                       vertex->getX() > vertex->getZ() &&
                       vertex->getX() > (-(vertex->getZ()))) { //RIGHT_FACE
                 _intersectingFace = RIGHT_FACE;
@@ -101,7 +103,7 @@ public:
                 t = _vector.getZ() / vertex->getZ();
                 _vector.setX(t * vertex->getX());
                 _vector.setY(t * vertex->getY());
-            } else if(vertex->getY() < vertex->getZ() &&
+            } else if(vertex->getY() < (-(vertex->getZ())) &&
                       (-(vertex->getX())) < (-(vertex->getZ())) &&
                       vertex->getX() < (-(vertex->getZ()))) { //BACK_FACE
                 _intersectingFace = BACK_FACE;
@@ -109,10 +111,10 @@ public:
                 t = _vector.getZ() / vertex->getZ();
                 _vector.setX(t * vertex->getX());
                 _vector.setY(t * vertex->getY());
-            } else if((vertex->getY() > (-(vertex->getZ())) &&
-                       vertex->getY() > vertex->getZ()) &&
-                      (vertex->getY() > vertex->getX() &&
-                       vertex->getY() > (-(vertex->getX())))) { //TOP
+            } else if((vertex->getY() >= (-(vertex->getZ())) &&
+                       vertex->getY() >= vertex->getZ()) &&
+                      (vertex->getY() >= vertex->getX() &&
+                       vertex->getY() >= (-(vertex->getX())))) { //TOP
                 _intersectingFace = TOP_FACE;
                 _vector.setY(1.0);
                 t = _vector.getY() / vertex->getY();
