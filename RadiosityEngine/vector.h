@@ -67,6 +67,63 @@ public:
     void print() {
         cout << "(" << _x << "," << _y << "," << _z << ")";
     }
+    
+    //calculate and return the magnitude of this vector
+    float getMagnitude()
+    {
+        return sqrtf(_x * _x + _y * _y + _z * _z);
+    }
+    
+    //multiply this vector by a scalar
+    Vector operator*(float num) const
+    {
+        return Vector(_x * num, _y * num, _z * num);
+    }
+    
+    //pass in a vector, pass in a scalar, return the product
+    friend Vector operator*(float num, Vector const &vec)
+    {
+        return Vector(vec._x * num, vec._y * num, vec._z * num);
+    }
+    
+    //add two vectors
+    Vector operator+(const Vector &vec) const
+    {
+        return Vector(_x + vec._x, _y + vec._y, _z + vec._z);
+    }
+    
+    //subtract two vectors
+    Vector operator-(const Vector &vec) const
+    {
+        return Vector(_x - vec._x, _y - vec._y, _z - vec._z);
+    }
+    
+    //normalize this vector
+    void normalizeVector()
+    {
+        float magnitude = getMagnitude();
+        _x /= magnitude;
+        _y /= magnitude;
+        _z /= magnitude;
+    }
+    
+    //calculate and return dot product
+    float dot(Vector vec) {
+        return _x * vec.getX() + _y * vec.getY() + _z * vec.getZ();
+    }
+    
+    //calculate and return cross product
+    Vector cross(Vector vec) {
+        return Vector(_y * vec.getZ() - _z * vec.getY(),
+                      _z * vec.getX() - _x * vec.getZ(),
+                      _x * vec.getY() - _y * vec.getX());
+    }
+    
+    Vector unit() {
+        return Vector(_x / sqrt(dot(Vector(_x,_y,_z))),
+                      _y / sqrt(dot(Vector(_x,_y,_z))),
+                      _z / sqrt(dot(Vector(_x,_y,_z))));
+    }
 };
 
 #endif
