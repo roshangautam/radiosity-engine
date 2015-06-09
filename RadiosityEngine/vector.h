@@ -55,13 +55,19 @@ public:
         _z = applicate;
     }
 
-    void read() {
+    bool read() {
         cout << "Enter x:";
         cin >> _x;
         cout << "Enter y:";
         cin >> _y;
         cout << "Enter z:";
         cin >> _z;
+        if (_x == 0 &&
+            _y == 0 &&
+            _z == 0) {
+            return false;
+        }
+        return true;
     }
     
     void print() {

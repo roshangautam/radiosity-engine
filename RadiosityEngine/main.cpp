@@ -14,30 +14,37 @@
 
 using namespace std;
 
-void findPatch(Vector,Vector,Vector);
+void mainLoop();
+void findAndPrintPatch(Vector,Vector,Vector);
 void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
-Vector findProjection(Vector, Face);
+Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 
 int main(int argc, const char * argv[]) {
-    Point point, secondPoint;
-    Intersection intersection, secondIntersection;
-    Vector vertex, vertex1, vertex2;
-    ThreeDIntersection threeDIntersection;
-    char c = '1';
+
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
     cout << "1. Light Source Origin is always (0,0)\n";
     cout << "2. Height of hemi-square = 1 i.e y = 1 \n";
     cout << "3. Left End of hemi-square from origin = -1 i.e x = -1 \n";
     cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n";
+    mainLoop();
+    return 0;
+}
+
+void mainLoop() {
+    Point point, secondPoint;
+    Intersection intersection, secondIntersection;
+    Vector vertex, vertex1, vertex2;
+    ThreeDIntersection threeDIntersection;
+    char c = '1';
     while(1) {
         cout << "\nOptions:\n";
-        cout << "(1)Enter Coordinates for a 2D Point\n";
-        cout << "(2)Enter Coordinates for a 2D line segment\n";
-        cout << "(3)Enter Coordinates for a Vertex (3D)\n";
-        cout << "(4)Enter Coordinates for a Triangular Patch (3D)\n";
+        cout << "(1)Enter Coordinates for a 2D Point and Hemicube intersection\n";
+        cout << "(2)Enter Coordinates for a 2D line segment and Hemicube intersection\n";
+        cout << "(3)Enter Coordinates for a Vertex (3D) and Hemicube intersection\n";
+        cout << "(4)Enter Coordinates to calculate shadow (patch) of a triangle (3D) on Hemicube surface\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -48,33 +55,33 @@ int main(int argc, const char * argv[]) {
             switch (c) {
                 case '1':
                 {
-                    cout << "Enter Coordinates for the point!\n";
+                    cout << "Enter Coordinates of the point!\n";
                     point.read();
                     if (point.getY() > 0 && (point.getX() > 1 || point.getX() < -1) ) {
                         intersection.intersect(&point);
-                        cout << "Coordinates of intersection are:";
+                        cout << "\nCoordinates of intersection are:";
                         intersection.simplePrint();
                     } else {
-                        cout << "Invalid Coordinates provided.\nx must be greater than 1 and less than -1.\ny must be greater than 1.\nPlease try again.\n";
+                        cout << "\nInvalid Coordinates provided.\nx must be greater than 1 and less than -1.\ny must be greater than 1.\nPlease try again.\n";
                     }
                 }
                     break;
                 case '2':
                 {
-                    cout << "Enter Coordinates for first point!\n";
+                    cout << "Enter Coordinates of first point!\n";
                     point.read();
-                    cout << "Enter Coordinates for second point!\n";
+                    cout << "Enter Coordinates of second point!\n";
                     secondPoint.read();
                     intersection.intersect(&point);
                     secondIntersection.intersect(&secondPoint);
                     if(intersection.getSide() == secondIntersection.getSide()) {
-                        cout << "Coordinates of intersecting segment are:";
+                        cout << "\nCoordinates of intersecting segment are:";
                         intersection.getPoint().print();
                         cout << ",";
                         secondIntersection.getPoint().print();
                         cout << " on " << intersection.getHumanReadableSide() << "\n";
                     } else {
-                        cout << "Coordinates of intersecting segment are:";
+                        cout << "\nCoordinates of intersecting segment are:";
                         intersection.print();
                         if(intersection.getSide() == 0) {
                             cout << " AND (-1,1),(1,1) on Top AND ";
@@ -90,44 +97,60 @@ int main(int argc, const char * argv[]) {
                 case '3':
                 {
                     cout << "Enter Coordinates of the Vertex\n";
-                    vertex.read();
-                    threeDIntersection.intersect(&vertex);
-                    threeDIntersection.printWithFace();
+                    if(vertex.read()) {
+                        threeDIntersection.intersect(&vertex);
+                        threeDIntersection.printWithFace();
+                    } else {
+                        cout << "\nERROR:All coordinates can't be 0. Try again with a different set of coordinates.\n";
+                    }
                 }
                     break;
                 case '4':
                 {
-                    cout << "Enter Coordinates of the Triangular Patch\n";
                     cout << "Enter Coordinates for first vertex:\n";
-                    vertex.read();
+                    if(!vertex.read()) {
+                        cout << "\nERROR:All coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
                     cout << "Enter Coordinates for second vertex:\n";
-                    vertex1.read();
+                    if(!vertex1.read()) {
+                        cout << "\nERROR:All coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
                     cout << "Enter Coordinates for third vertex\n";
-                    vertex2.read();
-                    findPatch(vertex, vertex1, vertex2);
+                    if(!vertex2.read()) {
+                        cout << "\nERROR:All coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    findAndPrintPatch(vertex, vertex1, vertex2);
                 }
                     break;
                 case 'q':
                 case 'Q':
-                    cout << "--- End of Program ---\n";
+                    cout << "\n--- End of Program ---\n";
                     exit(1);
                 default:
-                    cout << "Invalid option\n\n";
+                    cout << "\nInvalid option\n";
                     break;
             }
         }
     }
-    return 0;
 }
 
-void findPatch(Vector point1, Vector point2, Vector point3) {
+void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
     ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
+    Vector givenPoints[3] = {point1, point2, point3 };
+    Vector projectedPoint;
+    Vector pointOnEdges[3];
+    Face projectionFace;
+    
     patchPoint1.intersect(&point1);
     patchPoint2.intersect(&point2);
     patchPoint3.intersect(&point3);
     
-    Vector givenPoints[3] = { point1, point2, point3 };
-    ThreeDIntersection patchPoints[3] = { patchPoint1, patchPoint2, patchPoint3};
+    
+    ThreeDIntersection patchPoints[3] = {patchPoint1, patchPoint2, patchPoint3};
+    
     
     if (patchPoint1.getIntersectingFace() == patchPoint2.getIntersectingFace() &&
         patchPoint2.getIntersectingFace() == patchPoint3.getIntersectingFace() &&
@@ -140,23 +163,49 @@ void findPatch(Vector point1, Vector point2, Vector point3) {
         } else { // patch is in two sides of the cube // 2 new points
             int index = findPointToBeProjected(patchPoints);
             if(index >= 0) {
-                Face projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
+                projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
                 givenPoints[index].print();
                 cout << projectionFace;
-                Vector projectedPoint = findProjection(givenPoints[index], projectionFace);
-                
+                projectedPoint = findPointBetweenTwoPoints(givenPoints[index], Vector(0,0,0), projectionFace);
+
                 //parametric equation changes for the following.
-//                Vector pointOnEdge1 = findProjection(projectedPoint, patchPoints[index].getIntersectingFace());
-//                Vector pointOnEdge2 = findProjection(projectedPoint, patchPoints[index].getIntersectingFace());
+
                 if (index == 0) {
-                    // find points for index = 1 and index = 2
+                    pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
+                    pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());
+                    
+                    patchPoints[0].printWithFace();
+                    pointOnEdges[1].print();
+                    patchPoints[1].print();
+                    patchPoints[2].print();
+                    pointOnEdges[2].print();
+                    cout << " On " << patchPoints[1].getHumanReadableIntersectingFace() << "\n";
                 } else if(index == 1) {
-                    // find points for index = 0 and index = 2
+                    pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[0].getVector(), patchPoints[index].getIntersectingFace());
+                    pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());
+                    
+                    patchPoints[1].printWithFace();
+                    
+                    pointOnEdges[0].print();
+                    patchPoints[0].print();
+                    patchPoints[2].print();
+                    pointOnEdges[2].print();
+                    cout << " On " << patchPoints[2].getHumanReadableIntersectingFace() << "\n";
                 } else if(index == 2) {
-                    // find points for index = 0 and index = 1
+                    pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[0].getVector(), patchPoints[index].getIntersectingFace());
+                    pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
+
+                    patchPoints[2].printWithFace();
+                    
+                    pointOnEdges[0].print();
+                    patchPoints[0].print();
+                    patchPoints[1].print();
+                    pointOnEdges[1].print();
+                    cout << " On " << patchPoints[0].getHumanReadableIntersectingFace() << "\n";
                 }
+                
             } else {
-                cout << "ERROR:Invalid projection point\n\n";
+                cout << "ERROR:Invalid projection point\n";
             }
         }
     }
@@ -171,7 +220,7 @@ void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection pat
     patchPoint2.print();
     cout << ",";
     patchPoint3.print();
-    cout << " on " << patchPoint1.getHumanReadableIntersectingFace() << "\n\n";
+    cout << " on " << patchPoint1.getHumanReadableIntersectingFace() << "\n";
 }
 
 int findPointToBeProjected(ThreeDIntersection patchPoints[]) {
@@ -220,34 +269,34 @@ Face findProjectionFace(ThreeDIntersection patchPoint1, ThreeDIntersection patch
     return NA;
 }
 
-Vector findProjection(Vector pointToBeProjected, Face face) {
-    float t;
+Vector findPointBetweenTwoPoints(Vector point1, Vector point2, Face face) { //parametric equation approach
+    float t; //parameter
     Vector projectedPoint;
     if (face == TOP_FACE) {
         projectedPoint.setY(1.0);
-        t = projectedPoint.getY() / pointToBeProjected.getY();
-        projectedPoint.setX(t * pointToBeProjected.getX());
-        projectedPoint.setZ(t * pointToBeProjected.getZ());
+        t = projectedPoint.getY() - point2.getY()/ point1.getY() - point2.getY();
+        projectedPoint.setX((1 - t) * point2.getX() + t * point1.getX());
+        projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == RIGHT_FACE) {
         projectedPoint.setX(1.0);
-        t = projectedPoint.getX() / pointToBeProjected.getX();
-        projectedPoint.setY(t * pointToBeProjected.getY());
-        projectedPoint.setZ(t * pointToBeProjected.getZ());
+        t = projectedPoint.getX() - point2.getX() / point1.getX() - point2.getX();
+        projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
+        projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == LEFT_FACE) {
         projectedPoint.setX(-1.0);
-        t = projectedPoint.getX() / pointToBeProjected.getX();
-        projectedPoint.setY(t * pointToBeProjected.getY());
-        projectedPoint.setZ(t * pointToBeProjected.getZ());
+        t = projectedPoint.getX() - point2.getX() / point1.getX() - point2.getX();
+        projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
+        projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == FRONT_FACE) {
         projectedPoint.setZ(1.0);
-        t = projectedPoint.getZ() / pointToBeProjected.getZ();
-        projectedPoint.setY(t * pointToBeProjected.getY());
-        projectedPoint.setX(t * pointToBeProjected.getX());
+        t = projectedPoint.getZ() - point2.getZ() / point1.getZ() - point2.getZ();
+        projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
+        projectedPoint.setX((1-t) * point2.getX() + t * point1.getX());
     } else if(face == BACK_FACE) {
         projectedPoint.setZ(-1.0);
-        t = projectedPoint.getZ() / pointToBeProjected.getZ();
-        projectedPoint.setY(t * pointToBeProjected.getY());
-        projectedPoint.setX(t * pointToBeProjected.getX());
+        t = projectedPoint.getZ() - point2.getZ() / point1.getZ() - point2.getZ();
+        projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
+        projectedPoint.setX((1-t) * point2.getX() + t * point1.getX());
     }
     return projectedPoint;
 }
