@@ -17,8 +17,8 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
-    Vector vertex;
-    ThreeDIntersection threeDIntersection;
+    Vector vertex, vertex1, vertex2;
+    ThreeDIntersection threeDIntersection, patch_point1, patch_point2, patch_point3;
     char c = '1';
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
@@ -31,6 +31,7 @@ int main(int argc, const char * argv[]) {
         cout << "(1)Enter Coordinates for a 2D Point\n";
         cout << "(2)Enter Coordinates for a 2D line segment\n";
         cout << "(3)Enter Coordinates for a Vertex (3D)\n";
+        cout << "(4)Enter Coordinates for a Triangular Patch (3D)\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -86,6 +87,23 @@ int main(int argc, const char * argv[]) {
                     vertex.read();
                     threeDIntersection.intersect(&vertex);
                     threeDIntersection.simplePrint();
+                }
+                    break;
+                case '4':
+                {
+                    cout << "Enter Coordinates of the Triangular Patch\n";
+                    cout << "Enter Coordinates for first vertex:\n";
+                    vertex.read();
+                    cout << "Enter Coordinates for second vertex:\n";
+                    vertex1.read();
+                    cout << "Enter Coordinates for third vertex\n";
+                    vertex2.read();
+                    patch_point1.intersect(&vertex);
+                    patch_point2.intersect(&vertex1);
+                    patch_point3.intersect(&vertex2);
+                    patch_point1.simplePrint();
+                    patch_point2.simplePrint();
+                    patch_point3.simplePrint();
                 }
                     break;
                 case 'q':

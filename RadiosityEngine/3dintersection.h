@@ -77,7 +77,7 @@ public:
     void intersect(Vector *vertex) {  // parametric form approach
         float t;
         if (vertex->getY() >= 0) {
-            if ((vertex->getY() <= vertex->getZ() || (vertex->getY() <= (-(vertex->getZ()))))  &&
+            if ((vertex->getY() <= (-(vertex->getX())))  &&
                 (-(vertex->getX())) > vertex->getZ() &&
                 (-(vertex->getX())) > (-(vertex->getZ()))) { // LEFT_FACE
                 _intersectingFace =  LEFT_FACE;
@@ -85,7 +85,7 @@ public:
                 t = _vector.getX() / vertex->getX();
                 _vector.setY(t * vertex->getY());
                 _vector.setZ(t * vertex->getZ());
-            } else if((vertex->getY() <= vertex->getZ() || (vertex->getY() <= (-(vertex->getZ())))) &&
+            } else if(vertex->getY() <= vertex->getX() &&
                       vertex->getX() > vertex->getZ() &&
                       vertex->getX() > (-(vertex->getZ()))) { //RIGHT_FACE
                 _intersectingFace = RIGHT_FACE;
@@ -131,6 +131,17 @@ public:
             cout << " on " << getHumanReadableIntersectingFace() << "\n\n";
         }
     }
+    
+    //    function SameSide(p1,p2, a,b)
+    //    cp1 = CrossProduct(b-a, p1-a)
+    //    cp2 = CrossProduct(b-a, p2-a)
+    //    if DotProduct(cp1, cp2) >= 0 then return true
+    //        else return false
+    //
+    //    function PointInTriangle(p, a,b,c)
+    //    if SameSide(p,a, b,c) and SameSide(p,b, a,c)
+    //        and SameSide(p,c, a,b) then return true
+    //        else return false
 };
 
 #endif
