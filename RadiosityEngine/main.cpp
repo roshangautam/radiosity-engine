@@ -141,7 +141,7 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
     ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
     Vector givenPoints[3] = {point1, point2, point3 };
     Vector projectedPoint;
-    Vector pointOnEdges[3];
+    Vector pointOnEdges[4];
     Face projectionFace;
     
     patchPoint1.intersect(&point1);
@@ -157,51 +157,72 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
         patchPoint3.getIntersectingFace() == patchPoint1.getIntersectingFace()) { // all in the same side of cube
         printPatchOnSameSide(patchPoint1, patchPoint2, patchPoint3);
     } else {
+        cout << "\nCoordinates of the patch are:\n";
         if (patchPoint1.getIntersectingFace() != patchPoint2.getIntersectingFace() &&
             patchPoint2.getIntersectingFace() != patchPoint3.getIntersectingFace() &&
-            patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) { // patch is in three different sides of the cube // 4 new points: we need to calculate three new points and find another point based on what faces the points fall
-        } else { // patch is in two sides of the cube // 2 new points
+            patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) {
+            // patch is in three different sides of the cube // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
+            projectedPoint = findPointBetweenTwoPoints(givenPoints[0], patchPoint2.getVector(), patchPoint2.getIntersectingFace());
+        } else {
+            // patch is in two sides of the cube // Need 2 new points
             int index = findPointToBeProjected(patchPoints);
             if(index >= 0) {
                 projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
-                givenPoints[index].print();
-                cout << projectionFace;
                 projectedPoint = findPointBetweenTwoPoints(givenPoints[index], Vector(0,0,0), projectionFace);
-
-                //parametric equation changes for the following.
-
                 if (index == 0) {
                     pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
                     pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());
                     
-                    patchPoints[0].printWithFace();
+                    patchPoints[0].print();
+                    cout << " ––– ";
                     pointOnEdges[1].print();
-                    patchPoints[1].print();
-                    patchPoints[2].print();
+                    cout << " ––– ";
                     pointOnEdges[2].print();
-                    cout << " On " << patchPoints[1].getHumanReadableIntersectingFace() << "\n";
+                    cout << " on " << patchPoints[0].getHumanReadableIntersectingFace() << " AND " ;
+                    pointOnEdges[1].print();
+                    cout << " ––– ";
+                    patchPoints[1].print();
+                    cout << " ––– ";
+                    patchPoints[2].print();
+                    cout << " ––– ";
+                    pointOnEdges[2].print();
+                    cout << " on " << patchPoints[1].getHumanReadableIntersectingFace() << "\n";
                 } else if(index == 1) {
                     pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[0].getVector(), patchPoints[index].getIntersectingFace());
                     pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());
                     
-                    patchPoints[1].printWithFace();
-                    
+                    patchPoints[1].print();
+                    cout << " ––– ";
                     pointOnEdges[0].print();
-                    patchPoints[0].print();
-                    patchPoints[2].print();
+                    cout << " ––– ";
                     pointOnEdges[2].print();
-                    cout << " On " << patchPoints[2].getHumanReadableIntersectingFace() << "\n";
+                    cout << " on " << patchPoints[1].getHumanReadableIntersectingFace() << " AND " ;
+                    pointOnEdges[0].print();
+                    cout << " ––– ";
+                    patchPoints[0].print();
+                    cout << " ––– ";
+                    patchPoints[2].print();
+                    cout << " ––– ";
+                    pointOnEdges[2].print();
+                    cout << " on " << patchPoints[2].getHumanReadableIntersectingFace() << "\n";
                 } else if(index == 2) {
                     pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[0].getVector(), patchPoints[index].getIntersectingFace());
                     pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
 
-                    patchPoints[2].printWithFace();
-                    
+                    patchPoints[2].print();
+                    cout << " ––– ";
                     pointOnEdges[0].print();
-                    patchPoints[0].print();
-                    patchPoints[1].print();
+                    cout << " ––– ";
                     pointOnEdges[1].print();
-                    cout << " On " << patchPoints[0].getHumanReadableIntersectingFace() << "\n";
+                    cout << " on " << patchPoints[2].getHumanReadableIntersectingFace() << " AND " ;
+                    pointOnEdges[0].print();
+                    cout << " ––– ";
+                    patchPoints[0].print();
+                    cout << " ––– ";
+                    patchPoints[1].print();
+                    cout << " ––– ";
+                    pointOnEdges[1].print();
+                    cout << " on " << patchPoints[0].getHumanReadableIntersectingFace() << "\n";
                 }
                 
             } else {
@@ -214,7 +235,7 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
 }
 
 void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
-    cout << "Coordinates of the patch are:\n";
+    cout << "\nCoordinates of the patch are:\n";
     patchPoint1.print();
     cout << ",";
     patchPoint2.print();
