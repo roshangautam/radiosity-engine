@@ -122,7 +122,11 @@ public:
         }
     }
     
-    void simplePrint() {
+    void print() {
+        cout << "(" << _vector.getX() << "," << _vector.getY() << "," << _vector.getZ() << ")";
+    }
+    
+    void printWithFace() {
         if (_intersectingFace == NA) {
             cout << "\n" << getHumanReadableIntersectingFace() << "\n\n";
         } else {

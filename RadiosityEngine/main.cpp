@@ -14,11 +14,17 @@
 
 using namespace std;
 
+void findPatch(Vector,Vector,Vector);
+void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
+int findPointToBeProjected(ThreeDIntersection[]);
+Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
+Vector findProjection(Vector, Face);
+
 int main(int argc, const char * argv[]) {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
-    ThreeDIntersection threeDIntersection, patch_point1, patch_point2, patch_point3;
+    ThreeDIntersection threeDIntersection;
     char c = '1';
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
@@ -86,7 +92,7 @@ int main(int argc, const char * argv[]) {
                     cout << "Enter Coordinates of the Vertex\n";
                     vertex.read();
                     threeDIntersection.intersect(&vertex);
-                    threeDIntersection.simplePrint();
+                    threeDIntersection.printWithFace();
                 }
                     break;
                 case '4':
@@ -98,12 +104,7 @@ int main(int argc, const char * argv[]) {
                     vertex1.read();
                     cout << "Enter Coordinates for third vertex\n";
                     vertex2.read();
-                    patch_point1.intersect(&vertex);
-                    patch_point2.intersect(&vertex1);
-                    patch_point3.intersect(&vertex2);
-                    patch_point1.simplePrint();
-                    patch_point2.simplePrint();
-                    patch_point3.simplePrint();
+                    findPatch(vertex, vertex1, vertex2);
                 }
                     break;
                 case 'q':
@@ -117,4 +118,136 @@ int main(int argc, const char * argv[]) {
         }
     }
     return 0;
+}
+
+void findPatch(Vector point1, Vector point2, Vector point3) {
+    ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
+    patchPoint1.intersect(&point1);
+    patchPoint2.intersect(&point2);
+    patchPoint3.intersect(&point3);
+    
+    Vector givenPoints[3] = { point1, point2, point3 };
+    ThreeDIntersection patchPoints[3] = { patchPoint1, patchPoint2, patchPoint3};
+    
+    if (patchPoint1.getIntersectingFace() == patchPoint2.getIntersectingFace() &&
+        patchPoint2.getIntersectingFace() == patchPoint3.getIntersectingFace() &&
+        patchPoint3.getIntersectingFace() == patchPoint1.getIntersectingFace()) { // all in the same side of cube
+        printPatchOnSameSide(patchPoint1, patchPoint2, patchPoint3);
+    } else {
+        if (patchPoint1.getIntersectingFace() != patchPoint2.getIntersectingFace() &&
+            patchPoint2.getIntersectingFace() != patchPoint3.getIntersectingFace() &&
+            patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) { // patch is in three different sides of the cube // 4 new points: we need to calculate three new points and find another point based on what faces the points fall
+        } else { // patch is in two sides of the cube // 2 new points
+            int index = findPointToBeProjected(patchPoints);
+            if(index >= 0) {
+                Face projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
+                givenPoints[index].print();
+                cout << projectionFace;
+                Vector projectedPoint = findProjection(givenPoints[index], projectionFace);
+                
+                //parametric equation changes for the following.
+//                Vector pointOnEdge1 = findProjection(projectedPoint, patchPoints[index].getIntersectingFace());
+//                Vector pointOnEdge2 = findProjection(projectedPoint, patchPoints[index].getIntersectingFace());
+                if (index == 0) {
+                    // find points for index = 1 and index = 2
+                } else if(index == 1) {
+                    // find points for index = 0 and index = 2
+                } else if(index == 2) {
+                    // find points for index = 0 and index = 1
+                }
+            } else {
+                cout << "ERROR:Invalid projection point\n\n";
+            }
+        }
+    }
+    
+    
+}
+
+void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
+    cout << "Coordinates of the patch are:\n";
+    patchPoint1.print();
+    cout << ",";
+    patchPoint2.print();
+    cout << ",";
+    patchPoint3.print();
+    cout << " on " << patchPoint1.getHumanReadableIntersectingFace() << "\n\n";
+}
+
+int findPointToBeProjected(ThreeDIntersection patchPoints[]) {
+    bool found = false;
+    for (int i = 0; i <= 2; i++) {
+        found = true;
+        for (int j = i+1; j<= (2-i); j++) {
+            if (patchPoints[i].getIntersectingFace() == patchPoints[j].getIntersectingFace()) {
+                found = false;
+                break;
+            }
+        }
+        if (found) {
+            return  i;
+            break;
+        }
+    }
+    return -1;
+}
+
+Face findProjectionFace(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
+    
+    bool found = false;
+    ThreeDIntersection uniquePoint;
+    ThreeDIntersection patchPoints[3];
+    patchPoints[0] = patchPoint1;
+    patchPoints[1] = patchPoint2;
+    patchPoints[2] = patchPoint3;
+    
+    for (int i = 0; i <= 2; i++) {
+        found = true;
+        for (int j = i+1; j<= (2-i); j++) {
+            if (patchPoints[i].getIntersectingFace() == patchPoints[j].getIntersectingFace()) {
+                found = false;
+                break;
+            }
+        }
+        if (found) {
+            if (i == 2) {
+                return patchPoints[i-1].getIntersectingFace();
+            }
+            return  patchPoints[i+1].getIntersectingFace();
+            break;
+        }
+    }
+    return NA;
+}
+
+Vector findProjection(Vector pointToBeProjected, Face face) {
+    float t;
+    Vector projectedPoint;
+    if (face == TOP_FACE) {
+        projectedPoint.setY(1.0);
+        t = projectedPoint.getY() / pointToBeProjected.getY();
+        projectedPoint.setX(t * pointToBeProjected.getX());
+        projectedPoint.setZ(t * pointToBeProjected.getZ());
+    } else if(face == RIGHT_FACE) {
+        projectedPoint.setX(1.0);
+        t = projectedPoint.getX() / pointToBeProjected.getX();
+        projectedPoint.setY(t * pointToBeProjected.getY());
+        projectedPoint.setZ(t * pointToBeProjected.getZ());
+    } else if(face == LEFT_FACE) {
+        projectedPoint.setX(-1.0);
+        t = projectedPoint.getX() / pointToBeProjected.getX();
+        projectedPoint.setY(t * pointToBeProjected.getY());
+        projectedPoint.setZ(t * pointToBeProjected.getZ());
+    } else if(face == FRONT_FACE) {
+        projectedPoint.setZ(1.0);
+        t = projectedPoint.getZ() / pointToBeProjected.getZ();
+        projectedPoint.setY(t * pointToBeProjected.getY());
+        projectedPoint.setX(t * pointToBeProjected.getX());
+    } else if(face == BACK_FACE) {
+        projectedPoint.setZ(-1.0);
+        t = projectedPoint.getZ() / pointToBeProjected.getZ();
+        projectedPoint.setY(t * pointToBeProjected.getY());
+        projectedPoint.setX(t * pointToBeProjected.getX());
+    }
+    return projectedPoint;
 }
