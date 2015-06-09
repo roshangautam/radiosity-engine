@@ -85,7 +85,6 @@ int main(int argc, const char * argv[]) {
                     cout << "Enter Coordinates of the Vertex\n";
                     vertex.read();
                     threeDIntersection.intersect(&vertex);
-                    cout << "Coordinates of intersection are:";
                     threeDIntersection.simplePrint();
                 }
                     break;
