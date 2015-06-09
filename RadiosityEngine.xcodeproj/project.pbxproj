@@ -24,11 +24,11 @@
 
 /* Begin PBXFileReference section */
 		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
-		E9EECE571B1FA8FE00C07F08 /* 3dintersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = 3dintersection.h; path = RadiosityEngine/3dintersection.h; sourceTree = SOURCE_ROOT; };
-		E9EECE581B1FA8FE00C07F08 /* 3dpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = 3dpoint.h; path = RadiosityEngine/3dpoint.h; sourceTree = SOURCE_ROOT; };
 		E9EECE591B1FA8FE00C07F08 /* intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intersection.h; path = RadiosityEngine/intersection.h; sourceTree = SOURCE_ROOT; };
 		E9EECE5A1B1FA8FE00C07F08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = RadiosityEngine/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9EECE5B1B1FA8FE00C07F08 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = RadiosityEngine/point.h; sourceTree = SOURCE_ROOT; };
+		E9EECE611B23A15500C07F08 /* 3dintersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = 3dintersection.h; path = RadiosityEngine/3dintersection.h; sourceTree = SOURCE_ROOT; };
+		E9EECE621B23A15500C07F08 /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vector.h; path = RadiosityEngine/vector.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,14 +61,30 @@
 		E99B28491B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXGroup;
 			children = (
-				E9EECE571B1FA8FE00C07F08 /* 3dintersection.h */,
-				E9EECE581B1FA8FE00C07F08 /* 3dpoint.h */,
-				E9EECE591B1FA8FE00C07F08 /* intersection.h */,
+				E9EECE5E1B23A05B00C07F08 /* 2D */,
+				E9EECE5D1B23A05200C07F08 /* 3D */,
 				E9EECE5A1B1FA8FE00C07F08 /* main.cpp */,
-				E9EECE5B1B1FA8FE00C07F08 /* point.h */,
 			);
 			name = RadiosityEngine;
 			path = LineIntersection;
+			sourceTree = "<group>";
+		};
+		E9EECE5D1B23A05200C07F08 /* 3D */ = {
+			isa = PBXGroup;
+			children = (
+				E9EECE611B23A15500C07F08 /* 3dintersection.h */,
+				E9EECE621B23A15500C07F08 /* vector.h */,
+			);
+			name = 3D;
+			sourceTree = "<group>";
+		};
+		E9EECE5E1B23A05B00C07F08 /* 2D */ = {
+			isa = PBXGroup;
+			children = (
+				E9EECE591B1FA8FE00C07F08 /* intersection.h */,
+				E9EECE5B1B1FA8FE00C07F08 /* point.h */,
+			);
+			name = 2D;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
