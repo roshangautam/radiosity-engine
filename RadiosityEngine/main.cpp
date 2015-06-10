@@ -14,26 +14,26 @@
 
 using namespace std;
 
-void mainLoop();
+void loop();
 void findAndPrintPatch(Vector,Vector,Vector);
 void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
+Vector findCommonVertex(Face[]);
 
 int main(int argc, const char * argv[]) {
-
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
     cout << "1. Light Source Origin is always (0,0)\n";
     cout << "2. Height of hemi-square = 1 i.e y = 1 \n";
     cout << "3. Left End of hemi-square from origin = -1 i.e x = -1 \n";
     cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n";
-    mainLoop();
+    loop();
     return 0;
 }
 
-void mainLoop() {
+void loop() {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
@@ -162,7 +162,45 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
             patchPoint2.getIntersectingFace() != patchPoint3.getIntersectingFace() &&
             patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) {
             // patch is in three different sides of the cube // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
-            projectedPoint = findPointBetweenTwoPoints(givenPoints[0], patchPoint2.getVector(), patchPoint2.getIntersectingFace());
+            projectedPoint = findPointBetweenTwoPoints(givenPoints[0], Vector(0,0,0), patchPoints[1].getIntersectingFace());
+            pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[0].getIntersectingFace());
+            
+            projectedPoint = findPointBetweenTwoPoints(givenPoints[0], Vector(0,0,0), patchPoints[2].getIntersectingFace());
+            pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[0].getIntersectingFace());
+            
+            projectedPoint = findPointBetweenTwoPoints(givenPoints[1], Vector(0,0,0), patchPoints[2].getIntersectingFace());
+            pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[1].getIntersectingFace());
+            
+            Face faces[3] = {patchPoints[0].getIntersectingFace(),patchPoints[1].getIntersectingFace(), patchPoints[2].getIntersectingFace()};
+            
+            pointOnEdges[3] = findCommonVertex(faces);
+            
+            patchPoints[0].print();
+            cout << " ––– ";
+            pointOnEdges[1].print();
+            cout << " ––– ";
+            pointOnEdges[3].print();
+            cout << " ––– ";
+            pointOnEdges[0].print();
+            cout << " on " << patchPoints[0].getHumanReadableIntersectingFace() << " AND " ;
+            
+            patchPoints[1].print();
+            cout << " ––– ";
+            pointOnEdges[0].print();
+            cout << " ––– ";
+            pointOnEdges[3].print();
+            cout << " ––– ";
+            pointOnEdges[2].print();
+            cout << " on " << patchPoints[1].getHumanReadableIntersectingFace() << " AND " ;
+            
+            patchPoints[2].print();
+            cout << " ––– ";
+            pointOnEdges[2].print();
+            cout << " ––– ";
+            pointOnEdges[3].print();
+            cout << " ––– ";
+            pointOnEdges[1].print();
+            cout << " on " << patchPoints[2].getHumanReadableIntersectingFace() << " AND " ;
         } else {
             // patch is in two sides of the cube // Need 2 new points
             int index = findPointToBeProjected(patchPoints);
@@ -320,4 +358,37 @@ Vector findPointBetweenTwoPoints(Vector point1, Vector point2, Face face) { //pa
         projectedPoint.setX((1-t) * point2.getX() + t * point1.getX());
     }
     return projectedPoint;
+}
+
+Vector findCommonVertex(Face faces[]) {
+    if ((faces[0] == TOP_FACE && faces[1] == FRONT_FACE && faces[2] == LEFT_FACE) ||
+        (faces[0] == TOP_FACE && faces[1] == LEFT_FACE && faces[2] == FRONT_FACE) ||
+        (faces[0] == FRONT_FACE && faces[1] == TOP_FACE && faces[2] == LEFT_FACE) ||
+        (faces[0] == FRONT_FACE && faces[1] == LEFT_FACE && faces[2] == TOP_FACE) ||
+        (faces[0] == LEFT_FACE && faces[1] == TOP_FACE && faces[2] == FRONT_FACE) ||
+        (faces[0] == LEFT_FACE && faces[1] == FRONT_FACE && faces[2] == TOP_FACE)) {
+        return Vector(-1,1,1);
+    } else if((faces[0] == TOP_FACE && faces[1] == FRONT_FACE && faces[2] == RIGHT_FACE) ||
+              (faces[0] == TOP_FACE && faces[1] == RIGHT_FACE && faces[2] == FRONT_FACE) ||
+              (faces[0] == FRONT_FACE && faces[1] == TOP_FACE && faces[2] == RIGHT_FACE) ||
+              (faces[0] == FRONT_FACE && faces[1] == RIGHT_FACE && faces[2] == TOP_FACE) ||
+              (faces[0] == RIGHT_FACE && faces[1] == TOP_FACE && faces[2] == FRONT_FACE) ||
+              (faces[0] == RIGHT_FACE && faces[1] == FRONT_FACE && faces[2] == TOP_FACE)) {
+        return Vector(1,1,1);
+    } else if((faces[0] == TOP_FACE && faces[1] == BACK_FACE && faces[2] == LEFT_FACE) ||
+              (faces[0] == TOP_FACE && faces[1] == LEFT_FACE && faces[2] == BACK_FACE) ||
+              (faces[0] == BACK_FACE && faces[1] == TOP_FACE && faces[2] == LEFT_FACE) ||
+              (faces[0] == BACK_FACE && faces[1] == LEFT_FACE && faces[2] == TOP_FACE) ||
+              (faces[0] == LEFT_FACE && faces[1] == TOP_FACE && faces[2] == BACK_FACE) ||
+              (faces[0] == LEFT_FACE && faces[1] == BACK_FACE && faces[2] == TOP_FACE)) {
+        return Vector(-1,1,-1);
+    } else if((faces[0] == TOP_FACE && faces[1] == BACK_FACE && faces[2] == RIGHT_FACE) ||
+              (faces[0] == TOP_FACE && faces[1] == RIGHT_FACE && faces[2] == BACK_FACE) ||
+              (faces[0] == BACK_FACE && faces[1] == TOP_FACE && faces[2] == RIGHT_FACE) ||
+              (faces[0] == BACK_FACE && faces[1] == RIGHT_FACE && faces[2] == TOP_FACE) ||
+              (faces[0] == RIGHT_FACE && faces[1] == TOP_FACE && faces[2] == BACK_FACE) ||
+              (faces[0] == RIGHT_FACE && faces[1] == BACK_FACE && faces[2] == TOP_FACE)) {
+        return Vector(1,1,-1);
+    }
+    return Vector(0,0,0);
 }
