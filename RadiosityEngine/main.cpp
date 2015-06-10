@@ -164,13 +164,13 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
   
             // patch is in three different sides of the cube // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
             
-            projectedPoint = findPointBetweenTwoPoints(givenPoints[0], Vector(0,0,0), patchPoints[2].getIntersectingFace());
+            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[0], patchPoints[2].getIntersectingFace());
             pointOnEdges[0] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[0].getIntersectingFace());
 
-            projectedPoint = findPointBetweenTwoPoints(givenPoints[1], Vector(0,0,0), patchPoints[0].getIntersectingFace());
+            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[1], patchPoints[0].getIntersectingFace());
             pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[0].getVector(), patchPoints[1].getIntersectingFace());
             
-            projectedPoint = findPointBetweenTwoPoints(givenPoints[2], Vector(0,0,0), patchPoints[1].getIntersectingFace());
+            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[2], patchPoints[1].getIntersectingFace());
             pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[2].getIntersectingFace());
 
             
@@ -209,7 +209,7 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
             int index = findPointToBeProjected(patchPoints);
             if(index >= 0) {
                 projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
-                projectedPoint = findPointBetweenTwoPoints(givenPoints[index], Vector(0,0,0), projectionFace);
+                projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[index], projectionFace);
                 if (index == 0) {
                     pointOnEdges[1] = findPointBetweenTwoPoints(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
                     pointOnEdges[2] = findPointBetweenTwoPoints(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());
@@ -336,27 +336,27 @@ Vector findPointBetweenTwoPoints(Vector point1, Vector point2, Face face) { //pa
     Vector projectedPoint;
     if (face == TOP_FACE) {
         projectedPoint.setY(1.0);
-        t = projectedPoint.getY() - point2.getY()/ point1.getY() - point2.getY();
+        t = projectedPoint.getY() - point1.getY()/ point2.getY() - point1.getY();
         projectedPoint.setX((1 - t) * point2.getX() + t * point1.getX());
         projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == RIGHT_FACE) {
         projectedPoint.setX(1.0);
-        t = projectedPoint.getX() - point2.getX() / point1.getX() - point2.getX();
+        t = projectedPoint.getX() - point1.getX() / point2.getX() - point1.getX();
         projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
         projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == LEFT_FACE) {
         projectedPoint.setX(-1.0);
-        t = projectedPoint.getX() - point2.getX() / point1.getX() - point2.getX();
+        t = projectedPoint.getX() - point1.getX() / point2.getX() - point1.getX();
         projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
         projectedPoint.setZ((1 - t) * point2.getZ() + t * point1.getZ());
     } else if(face == FRONT_FACE) {
         projectedPoint.setZ(1.0);
-        t = projectedPoint.getZ() - point2.getZ() / point1.getZ() - point2.getZ();
+        t = projectedPoint.getZ() - point1.getZ() / point2.getZ() - point1.getZ();
         projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
         projectedPoint.setX((1-t) * point2.getX() + t * point1.getX());
     } else if(face == BACK_FACE) {
         projectedPoint.setZ(-1.0);
-        t = projectedPoint.getZ() - point2.getZ() / point1.getZ() - point2.getZ();
+        t = projectedPoint.getZ() - point1.getZ() / point2.getZ() - point1.getZ();
         projectedPoint.setY((1 - t) * point2.getY() + t * point1.getY());
         projectedPoint.setX((1-t) * point2.getX() + t * point1.getX());
     }
