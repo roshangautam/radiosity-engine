@@ -62,8 +62,8 @@ public:
         cin >> _y;
         cout << "Enter z:";
         cin >> _z;
-        if (_x == 0 &&
-            _y == 0 &&
+        if (_x == 0 ||
+            _y == 0 ||
             _z == 0) {
             return false;
         }
