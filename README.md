@@ -6,3 +6,5 @@ Solid Modeling CS6413 - Radiosity Engine
 - [Assignment Two] (https://github.com/roshangautam/radiosity-engine/tree/AssignmentTwo) - Intersection of hemisquare with a 2D line segment
 
 - [Assignment Three] (https://github.com/roshangautam/radiosity-engine/tree/AssignmentThree) - Intersection of hemicube with a Vertex (3D)
+
+- [Assignment Four] (https://github.com/roshangautam/radiosity-engine/tree/AssignmentFour) - Calculate shadow (patch) of a triangle (3D) on Hemicube surface
