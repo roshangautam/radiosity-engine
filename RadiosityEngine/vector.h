@@ -10,6 +10,8 @@
 #ifndef Radiosit_yEngine_vector_h
 #define Radiosit_yEngine_vector_h
 
+#include "hemicube.h"
+
 class Vector {
     double _x, _y, _z;
 public:
@@ -62,9 +64,9 @@ public:
         cin >> _y;
         cout << "Enter z:";
         cin >> _z;
-        if ((_x <= 1 && _x >= -1) ||
-            (_y <= 1 && _y >= -1) ||
-            (_z <= 1 && _z >= -1) ) {
+        if ((_x < 0 && _x > -1) ||
+            (_y < 0 && _y > -1) ||
+            (_z < 0 && _z > -1) ) {
             return false;
         }
         return true;
@@ -72,6 +74,45 @@ public:
     
     void print() {
         cout << "(" << _x << "," << _y << "," << _z << ")";
+    }
+    
+    static Vector findPointOnALine(Vector point1, Vector point2, HemiCubeFace face) { //parametric equation
+        float t; //parameter
+        Vector projectedPoint;
+        if (face == TOP_FACE) {
+            projectedPoint.setY(1.0);
+            t = (projectedPoint.getY() - point1.getY()) / (point2.getY() - point1.getY());
+            projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+            projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
+        } else if(face == RIGHT_FACE) {
+            projectedPoint.setX(1.0);
+            t = (projectedPoint.getX() - point1.getX()) / (point2.getX() - point1.getX());
+            projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+            projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
+        } else if(face == LEFT_FACE) {
+            projectedPoint.setX(-1.0);
+            t = (projectedPoint.getX() - point1.getX()) / (point2.getX() - point1.getX());
+            projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+            projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
+        } else if(face == FRONT_FACE) {
+            projectedPoint.setZ(1.0);
+            t = (projectedPoint.getZ() - point1.getZ()) / (point2.getZ() - point1.getZ());
+            projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+            projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+        } else if(face == BACK_FACE) {
+            projectedPoint.setZ(-1.0);
+            t = (projectedPoint.getZ() - point1.getZ()) / (point2.getZ() - point1.getZ());
+            projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+            projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+        }
+        cout << "t:" << t << " –––– ";
+        point1.print();
+        cout << " ––– ";
+        point2.print();
+        cout << " ––– Face:" << face << ":";
+        projectedPoint.print();
+        cout << "\n";
+        return projectedPoint;
     }
     
     //calculate and return the magnitude of this vector
