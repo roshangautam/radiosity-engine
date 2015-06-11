@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <string>
-#include "color.h"
 
 #include "intersection.h"
 #include "3dintersection.h"
@@ -162,17 +161,15 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
         if (patchPoint1.getIntersectingFace() != patchPoint2.getIntersectingFace() &&
             patchPoint2.getIntersectingFace() != patchPoint3.getIntersectingFace() &&
             patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) {
-  
-            // patch is in three different sides of the cube // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
 
-            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[0], patchPoints[2].getIntersectingFace());
-            pointOnEdges[0] = findPointBetweenTwoPoints(patchPoints[2].getVector(), projectedPoint, patchPoints[0].getIntersectingFace());
+            // patch is in three different sides of the cube
+            // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
 
-            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[1], patchPoints[0].getIntersectingFace());
-            pointOnEdges[1] = findPointBetweenTwoPoints(patchPoints[0].getVector(), projectedPoint, patchPoints[1].getIntersectingFace());
-            
-            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[2], patchPoints[0].getIntersectingFace());
-            pointOnEdges[2] = findPointBetweenTwoPoints(patchPoints[0].getVector(), projectedPoint, patchPoints[2].getIntersectingFace());
+            for (int i = 0 ; i < 3; i++) {
+                int j = (i == 2 ? 0 : i+1);
+                projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[i], patchPoints[j].getIntersectingFace());
+                pointOnEdges[i] = findPointBetweenTwoPoints(patchPoints[j].getVector(), projectedPoint, patchPoints[i].getIntersectingFace());
+            }
 
             
             Face faces[3] = {patchPoints[0].getIntersectingFace(),patchPoints[1].getIntersectingFace(), patchPoints[2].getIntersectingFace()};
