@@ -30,8 +30,7 @@ int main(int argc, const char * argv[]) {
     cout << "2. Height of hemi-square = 1 i.e y = 1 \n";
     cout << "3. Left End of hemi-square from origin = -1 i.e x = -1 \n";
     cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n";
-    findPointBetweenTwoPoints(Vector(4,5,0.1),Vector(3,1,5), FRONT_FACE).print();
-//    loop();
+    loop();
     return 0;
 }
 
@@ -103,7 +102,7 @@ void loop() {
                         threeDIntersection.intersect(&vertex);
                         threeDIntersection.printWithFace();
                     } else {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        cout << "\nERROR:Coordinates must be greater than 1 and less than -1. Try again with a different set of coordinates.\n";
                     }
                 }
                     break;
@@ -111,17 +110,17 @@ void loop() {
                 {
                     cout << "Enter Coordinates for first vertex:\n";
                     if(!vertex.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        cout << "\nERROR:Coordinates must be greater than 1 and less than -1. Try again with a different set of coordinates.\n";
                         break;
                     }
                     cout << "Enter Coordinates for second vertex:\n";
                     if(!vertex1.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        cout << "\nERROR:Coordinates must be greater than 1 and less than -1. Try again with a different set of coordinates.\n";
                         break;
                     }
                     cout << "Enter Coordinates for third vertex\n";
                     if(!vertex2.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        cout << "\nERROR:Coordinates must be greater than 1 and less than -1. Try again with a different set of coordinates.\n";
                         break;
                     }
                     findAndPrintPatch(vertex, vertex1, vertex2);
@@ -165,15 +164,15 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
             patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) {
   
             // patch is in three different sides of the cube // Need 4 new points: we need to calculate three new points and find another point based on what faces the points fall
-            
+
             projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[0], patchPoints[2].getIntersectingFace());
             pointOnEdges[0] = findPointBetweenTwoPoints(patchPoints[2].getVector(), projectedPoint, patchPoints[0].getIntersectingFace());
 
             projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[1], patchPoints[0].getIntersectingFace());
             pointOnEdges[1] = findPointBetweenTwoPoints(patchPoints[0].getVector(), projectedPoint, patchPoints[1].getIntersectingFace());
             
-            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[2], patchPoints[1].getIntersectingFace());
-            pointOnEdges[2] = findPointBetweenTwoPoints(patchPoints[1].getVector(), projectedPoint, patchPoints[2].getIntersectingFace());
+            projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[2], patchPoints[0].getIntersectingFace());
+            pointOnEdges[2] = findPointBetweenTwoPoints(patchPoints[0].getVector(), projectedPoint, patchPoints[2].getIntersectingFace());
 
             
             Face faces[3] = {patchPoints[0].getIntersectingFace(),patchPoints[1].getIntersectingFace(), patchPoints[2].getIntersectingFace()};
@@ -338,29 +337,29 @@ Vector findPointBetweenTwoPoints(Vector point1, Vector point2, Face face) { //pa
     Vector projectedPoint;
     if (face == TOP_FACE) {
         projectedPoint.setY(1.0);
-        t = projectedPoint.getY() - point1.getY()/ point2.getY() - point1.getY();
-        projectedPoint.setX((1 - t) * point1.getX() + t * point2.getX());
-        projectedPoint.setZ((1 - t) * point1.getZ() + t * point2.getZ());
+        t = (projectedPoint.getY() - point1.getY()) / (point2.getY() - point1.getY());
+        projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+        projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
     } else if(face == RIGHT_FACE) {
         projectedPoint.setX(1.0);
-        t = projectedPoint.getX() - point1.getX() / point2.getX() - point1.getX();
-        projectedPoint.setY((1 - t) * point1.getY() + t * point2.getY());
-        projectedPoint.setZ((1 - t) * point1.getZ() + t * point2.getZ());
+        t = (projectedPoint.getX() - point1.getX()) / (point2.getX() - point1.getX());
+        projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+        projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
     } else if(face == LEFT_FACE) {
         projectedPoint.setX(-1.0);
-        t = projectedPoint.getX() - point1.getX() / point2.getX() - point1.getX();
-        projectedPoint.setY((1 - t) * point1.getY() + t * point2.getY());
-        projectedPoint.setZ((1 - t) * point1.getZ() + t * point2.getZ());
+        t = (projectedPoint.getX() - point1.getX()) / (point2.getX() - point1.getX());
+        projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
+        projectedPoint.setZ(((1 - t) * point1.getZ()) + (t * point2.getZ()));
     } else if(face == FRONT_FACE) {
         projectedPoint.setZ(1.0);
-        t = projectedPoint.getZ() - point1.getZ() / point2.getZ() - point1.getZ();
-        projectedPoint.setY((1 - t) * point1.getY() + t * point2.getY());
-        projectedPoint.setX((1 - t) * point1.getX() + t * point2.getX());
+        t = (projectedPoint.getZ() - point1.getZ()) / (point2.getZ() - point1.getZ());
+        projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+        projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
     } else if(face == BACK_FACE) {
         projectedPoint.setZ(-1.0);
-        t = projectedPoint.getZ() - point1.getZ() / point2.getZ() - point1.getZ();
-        projectedPoint.setY((1 - t) * point1.getY() + t * point2.getY());
-        projectedPoint.setX((1 - t) * point1.getX() + t * point2.getX());
+        t = (projectedPoint.getZ() - point1.getZ()) / (point2.getZ() - point1.getZ());
+        projectedPoint.setX(((1 - t) * point1.getX()) + (t * point2.getX()));
+        projectedPoint.setY(((1 - t) * point1.getY()) + (t * point2.getY()));
     }
     return projectedPoint;
 }

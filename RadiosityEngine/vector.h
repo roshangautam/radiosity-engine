@@ -11,7 +11,7 @@
 #define Radiosit_yEngine_vector_h
 
 class Vector {
-    float _x, _y, _z;
+    double _x, _y, _z;
 public:
     Vector() {
         _x = 0.0;
@@ -19,39 +19,39 @@ public:
         _z = 0.0;
     }
     
-    Vector(float abscissa, float ordinate, float applicate) {
+    Vector(double abscissa, double ordinate, double applicate) {
         _x = abscissa;
         _y = ordinate;
         _z = applicate;
     }
     
-    void setCoordinates(float abscissa, float ordinate, float applicate) {
+    void setCoordinates(double abscissa, double ordinate, double applicate) {
         _x = abscissa;
         _y = ordinate;
         _z = applicate;
     }
     
-    float getX() {
+    double getX() {
         return _x;
     }
     
-    float getY() {
+    double getY() {
         return _y;
     }
     
-    float getZ() {
+    double getZ() {
         return _z;
     }
     
-    void setX(float abscissa) {
+    void setX(double abscissa) {
         _x = abscissa;
     }
     
-    void setY(float ordinate) {
+    void setY(double ordinate) {
         _y = ordinate;
     }
     
-    void setZ(float applicate) {
+    void setZ(double applicate) {
         _z = applicate;
     }
 
@@ -62,9 +62,9 @@ public:
         cin >> _y;
         cout << "Enter z:";
         cin >> _z;
-        if (_x == 0 ||
-            _y == 0 ||
-            _z == 0) {
+        if ((_x <= 1 && _x >= -1) ||
+            (_y <= 1 && _y >= -1) ||
+            (_z <= 1 && _z >= -1) ) {
             return false;
         }
         return true;
@@ -75,19 +75,19 @@ public:
     }
     
     //calculate and return the magnitude of this vector
-    float getMagnitude()
+    double getMagnitude()
     {
         return sqrtf(_x * _x + _y * _y + _z * _z);
     }
     
     //multiply this vector by a scalar
-    Vector operator*(float num) const
+    Vector operator*(double num) const
     {
         return Vector(_x * num, _y * num, _z * num);
     }
     
     //pass in a vector, pass in a scalar, return the product
-    friend Vector operator*(float num, Vector const &vec)
+    friend Vector operator*(double num, Vector const &vec)
     {
         return Vector(vec._x * num, vec._y * num, vec._z * num);
     }
@@ -107,14 +107,14 @@ public:
     //normalize this vector
     void normalizeVector()
     {
-        float magnitude = getMagnitude();
+        double magnitude = getMagnitude();
         _x /= magnitude;
         _y /= magnitude;
         _z /= magnitude;
     }
     
     //calculate and return dot product
-    float dot(Vector vec) {
+    double dot(Vector vec) {
         return _x * vec.getX() + _y * vec.getY() + _z * vec.getZ();
     }
     
