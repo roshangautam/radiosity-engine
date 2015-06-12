@@ -110,6 +110,7 @@ void loop() {
                 {
 
                     findAndPrintPatch(Vector(5,4,2),Vector(2,5,7),Vector(3,5,9));
+//                    findAndPrintPatch(Vector(2,4,0),Vector(2,1,-1),Vector(2,1,1));
 //
 //                    cout << "Enter Coordinates for first vertex:\n";
 //                    if (vertex.read() && vertex1.read()) {
@@ -141,24 +142,24 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
     HemiCubeFace projectionFace;
     
     patchPoint1.intersect(&point1);
+    patchPoint1.printWithFace();
     patchPoint2.intersect(&point2);
+    patchPoint2.printWithFace();
     patchPoint3.intersect(&point3);
+    patchPoint3.printWithFace();
     
     ThreeDIntersection patchPoints[3] = {patchPoint1, patchPoint2, patchPoint3};
     if (DEBUG_MODE) {
-        cout << "Checking if the points are in same or different planes by comparing where they intersect on hemicube\n";
+        cout << "\nChecking if the points are in same or different planes by comparing where they intersect on hemicube ...... \n";
     }
     if (patchPoint1.getIntersectingFace() == patchPoint2.getIntersectingFace() &&
         patchPoint2.getIntersectingFace() == patchPoint3.getIntersectingFace() &&
         patchPoint3.getIntersectingFace() == patchPoint1.getIntersectingFace()) { // all in the same side of cube
         if (DEBUG_MODE) {
-            cout << "Points are on the same plane because they all intersect on the same surface of hemicube\n";
+            cout << "Points are on the same plane because they all intersect on the same surface of hemicube:" << patchPoint1.getHumanReadableIntersectingFace() << "\n";
         }
         printPatchOnSameSide(patchPoint1, patchPoint2, patchPoint3);
     } else {
-        if (DEBUG_MODE) {
-            cout << "Points are on different planes\n";
-        }
         if (patchPoint1.getIntersectingFace() != patchPoint2.getIntersectingFace() &&
             patchPoint2.getIntersectingFace() != patchPoint3.getIntersectingFace() &&
             patchPoint3.getIntersectingFace() != patchPoint1.getIntersectingFace()) {
@@ -210,14 +211,25 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
         } else {
             if (DEBUG_MODE) {
                 cout << "Points are on two different planes\n";
-                cout << "Find the point which is singled out";
+                cout << "Point which will be projected to calculate new points is: ";
             }
             // patch is in two sides of the cube // Need 2 new points
            
             int index = findPointToBeProjected(patchPoints);
+            if (DEBUG_MODE) {
+                givenPoints[index].print();
+                cout << ": On";
+            }
+            
             if(index >= 0) {
                 projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
+                if (DEBUG_MODE) {
+                    cout << projectionFace << "\n";
+                }
                 projectedPoint = Vector::findPointOnALine(Vector(0,0,0), givenPoints[index], projectionFace);
+                if (DEBUG_MODE) {
+                    cout << "Projected point which will be used to calculate two new points is:"; projectedPoint.print(); cout<<"\n";
+                }
                 if (index == 0) {
                     pointOnEdges[1] = Vector::findPointOnALine(projectedPoint, patchPoints[1].getVector(), patchPoints[index].getIntersectingFace());
                     pointOnEdges[2] = Vector::findPointOnALine(projectedPoint, patchPoints[2].getVector(), patchPoints[index].getIntersectingFace());

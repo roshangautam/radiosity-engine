@@ -71,59 +71,36 @@ public:
     }
     
     void intersect(Vector *vertex) {  // parametric form approach
-//        float t;
         if(DEBUG_MODE) {
-        cout << "\nCalculating intersection of ";
-        vertex->print();
-        cout << " with the surface of hemicube\n";
+            cout << "\nCalculating intersection of ";
+            vertex->print();
+            cout << " with the surface of hemicube\n";
         }
-        if (vertex->getY() >= 0) {
-            if ((vertex->getY() <= (-(vertex->getX())))  &&
-                (-(vertex->getX())) > vertex->getZ() &&
-                (-(vertex->getX())) > (-(vertex->getZ()))) { // LEFT_FACE
-                if(DEBUG_MODE) {
-                cout << "Intersects LEFT HemiCubeFace as Y:" << vertex->getY() << " < -(-X):" << (-(vertex->getX())) << " AND -(-X):" << (-(vertex->getX())) << " > Z:" << vertex->getZ() << " AND -(-X):" << (-(vertex->getX())) << " > -Z:" << (-(vertex->getZ())) << "\n";
-                }
-                _intersectingHemiCubeFace =  LEFT_FACE;
-            } else if(vertex->getY() <= vertex->getX() &&
-                      vertex->getX() > vertex->getZ() &&
-                      vertex->getX() > (-(vertex->getZ()))) { //RIGHT_FACE
-                if(DEBUG_MODE) {
-                cout << "Intersects RIGHT HemiCubeFace as Y:" << vertex->getY() << " <= X:" << ((vertex->getX())) << " AND -(-X):" << (-(vertex->getX())) << " > Z:" << vertex->getZ() << " AND X:" << ((vertex->getX())) << " > -Z:" << (-(vertex->getZ())) << "\n";
-                }
-                _intersectingHemiCubeFace = RIGHT_FACE;
-            } else if (vertex->getY() <= vertex->getZ() &&
-                       vertex->getZ() >= vertex->getX() &&
-                       vertex->getZ() >= (-(vertex->getX()))) { //FRONT_FACE
-                if (DEBUG_MODE) {
-                cout << "Intersects FRONT HemiCubeFace as Y:" << vertex->getY() << " <= Z:" << ((vertex->getZ())) << " AND Z:" << ((vertex->getZ())) << " >= X:" << vertex->getX() << " AND Z:" << ((vertex->getZ())) << " >= -(-X:" << (-(vertex->getX())) << "\n";
-                }
+        if (vertex->getY() > 0) {
+            if (vertex->getY() < vertex->getZ() &&
+                vertex->getX() < vertex->getZ() &&
+                (-(vertex->getX())) < vertex->getZ()) {
                 _intersectingHemiCubeFace = FRONT_FACE;
-            } else if(vertex->getY() <= (-(vertex->getZ())) &&
-                      (-(vertex->getX())) <= (-(vertex->getZ())) &&
-                      vertex->getX() <= (-(vertex->getZ()))) { //BACK_FACE
-                if (DEBUG_MODE) {
-                cout << "Intersects BACK HemiCubeFace as Y:" << vertex->getY() << " <= -(-X):" << (-(vertex->getX())) << " AND -(-X):" << (-(vertex->getX())) << " <= -(-Z):" << (-(vertex->getZ())) << " AND X:" << ((vertex->getX())) << " <= -(-Z):" << (-(vertex->getZ())) << "\n";
-                }
-
+            } else if(vertex->getY() < (-(vertex->getZ())) &&
+                      vertex->getX() < (-(vertex->getZ())) &&
+                      (-(vertex->getX())) < (-(vertex->getZ()))) {
                 _intersectingHemiCubeFace = BACK_FACE;
-            } else if((vertex->getY() > (-(vertex->getZ())) &&
-                       vertex->getY() > vertex->getZ()) &&
-                      (vertex->getY() > vertex->getX() &&
-                       vertex->getY() > (-(vertex->getX())))) { //TOP
-                          
-                if (DEBUG_MODE) {
-                  cout << "Intersects TOP HemiCubeFace as Y:" << vertex->getY() << " > -(-Z):" << (-(vertex->getZ())) << " AND Y:" << ((vertex->getY())) << " <= Z:" << ((vertex->getZ())) << " AND Y:" << ((vertex->getY())) << " > X:" << ((vertex->getX())) << " AND Y:" << ((vertex->getY())) << " > -(-X):" << (-(vertex->getX())) <<"\n";
-                }
+            } else if(vertex->getX() > vertex->getY() &&
+                      vertex->getX() > vertex->getZ() &&
+                      vertex->getX() > (-(vertex->getZ()))) {
+                _intersectingHemiCubeFace = RIGHT_FACE;
+            } else if((-(vertex->getX())) >  vertex->getY() &&
+                      (-(vertex->getX())) > vertex->getZ() &&
+                      (-(vertex->getX())) > (-(vertex->getZ()))) {
+                _intersectingHemiCubeFace = LEFT_FACE;
+            } else if(vertex->getY() > (-(vertex->getZ())) &&
+                      vertex->getY() > vertex->getZ() &&
+                      vertex->getY() > vertex->getX() &&
+                      vertex->getY() > (-(vertex->getX()))) {
                 _intersectingHemiCubeFace = TOP_FACE;
             }
         }
-        _vector = Vector::findPointOnALine(*vertex, Vector(0,0,0), _intersectingHemiCubeFace);
-        if (DEBUG_MODE) {
-            cout << "The point of intersection is:";
-            print();
-            cout << "\n";
-        }
+        _vector = Vector::findPointOnALine(Vector(0,0,0), *vertex,_intersectingHemiCubeFace);
     }
     
     void print() {
@@ -131,7 +108,7 @@ public:
     }
     
     void printWithFace() {
-        cout << "\nCoordinates of intersection are:";
+        cout << "Coordinates of intersection are:";
         cout << "(" << _vector.getX() << "," << _vector.getY() << "," << _vector.getZ() << ")";
         cout << " on " << getHumanReadableIntersectingFace() << "\n";
     }

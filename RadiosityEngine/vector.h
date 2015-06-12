@@ -109,8 +109,6 @@ public:
         point1.print();
         cout << " ––– ";
         point2.print();
-        cout << " ––– Face:" << face << ":";
-        projectedPoint.print();
         cout << "\n";
         return projectedPoint;
     }
