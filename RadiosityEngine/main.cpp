@@ -8,11 +8,14 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "intersection.h"
 #include "3dintersection.h"
 
 using namespace std;
+
+int POLY_COUNT = 10000;
 
 void loop();
 void findAndPrintPatch(Vector,Vector,Vector);
@@ -21,6 +24,7 @@ int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
+void generatePolygons(double, double, double, string);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -38,6 +42,7 @@ void loop() {
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
     ThreeDIntersection threeDIntersection;
+    double length = 0.0, width = 0.0, height = 0.0, boxLength = 0.0, boxWidth = 0.0, boxHeight = 0.0;
     char c = '1';
     while(1) {
         cout << "\nOptions:\n";
@@ -45,6 +50,7 @@ void loop() {
         cout << "(2)Enter Coordinates for a 2D line segment and Hemicube intersection\n";
         cout << "(3)Enter Coordinates for a Vertex (3D) and Hemicube intersection\n";
         cout << "(4)Enter Coordinates to calculate shadow (patch) of a triangle (3D) on Hemicube surface\n";
+        cout << "(5)Generate environment patch vertices\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -123,6 +129,24 @@ void loop() {
                         break;
                     }
                     findAndPrintPatch(vertex, vertex1, vertex2);
+                }
+                    break;
+                case '5':
+                {
+                    cout << "Enter the height of the room:";
+                    cin >> height;
+                    cout << "Enter the width of the room:";
+                    cin >> width;
+                    cout << "Enter the length of the room:";
+                    cin >> length;
+                    cout << "Enter the height of the box:";
+                    cin >> boxHeight;
+                    cout << "Enter the width of the box:";
+                    cin >> boxWidth;
+                    cout << "Enter the length of the box:";
+                    cin >> boxLength;
+                    generatePolygons(height, width, length, "room.obj");
+                    generatePolygons(boxHeight, boxWidth, boxLength, "box.obj");
                 }
                     break;
                 case 'q':
@@ -394,4 +418,67 @@ Vector findCommonVertex(Face faces[]) {
         return Vector(1,1,-1);
     }
     return Vector(0,0,0);
+}
+
+void generatePolygons(double width, double height, double length, string filename) {
+    // WE ASSUME THE BOTTOM LEFT CORNER OF THE ROOM IS (0,0,0)
+    ofstream objectFile;
+    objectFile.open (filename);
+    double factor = (4 * (( width * height) + (length * height) + (width * length))) / POLY_COUNT;
+    double DELTA = floor(sqrt(factor) * 100) / 100;
+    if (objectFile) {
+        cout << "File Generated. Now generating polygons\n";
+        // FRONT AND BACK
+        int i = 0; //polycount
+        for (float z = 0; z <= length; z += length) {
+            for (float y = 0; y < height; y += DELTA) {
+                for (float x =0; x < width; x+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // LEFT AND RIGHT
+        for (float x = 0; x <= width; x += width) {
+            for (float y = 0; y < height; y += DELTA) {
+                for (float z =0; z < length; z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // TOP AND BOTTTOM
+        for (float y = 0; y <= height; y += height) {
+            for (float x = 0; x < width; x += DELTA) {
+                for (float z =0; z < length; z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                }
+            }
+        }
+        cout << "Polygon count:" << i << " for " << filename << "\n";
+        objectFile.close();
+        cout << "Done Generating Polygons\n";
+    } else {
+        cout << "Error Generating object file. Try again\n";
+    }
+    
 }
