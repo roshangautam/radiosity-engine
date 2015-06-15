@@ -23,6 +23,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0145BAE71B2F0F6600CBACCE /* vmath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vmath.cpp; sourceTree = "<group>"; };
+		0145BAE81B2F0F6600CBACCE /* vmath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vmath.h; sourceTree = "<group>"; };
 		016E94F21B2A06980096824F /* general.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = general.h; path = RadiosityEngine/general.h; sourceTree = SOURCE_ROOT; };
 		E90E37C11B2E6505006FD331 /* hemicube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = hemicube.h; path = RadiosityEngine/hemicube.h; sourceTree = SOURCE_ROOT; };
 		E90E37C21B2E6505006FD331 /* poly.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = poly.h; path = RadiosityEngine/poly.h; sourceTree = SOURCE_ROOT; };
@@ -46,6 +48,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0145BAE61B2F0F6600CBACCE /* vmath */ = {
+			isa = PBXGroup;
+			children = (
+				0145BAE71B2F0F6600CBACCE /* vmath.cpp */,
+				0145BAE81B2F0F6600CBACCE /* vmath.h */,
+			);
+			name = vmath;
+			path = RadiosityEngine/vmath;
+			sourceTree = SOURCE_ROOT;
+		};
 		E99B283E1B1D1595009647A0 = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +77,7 @@
 		E99B28491B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXGroup;
 			children = (
+				0145BAE61B2F0F6600CBACCE /* vmath */,
 				E9EECE5E1B23A05B00C07F08 /* 2D */,
 				E9EECE5D1B23A05200C07F08 /* 3D */,
 				E9EECE5A1B1FA8FE00C07F08 /* main.cpp */,

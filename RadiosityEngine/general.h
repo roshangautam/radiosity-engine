@@ -33,7 +33,7 @@ inline double RadToDeg( double r )
 inline double DegToRad( double d )
 { return d * PI / 180.0; }
 
-inline double GetNormRand()
+inline double getNormRand()
 { return (double) rand() / (double) RAND_MAX; }
 
 #endif

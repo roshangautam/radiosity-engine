@@ -220,17 +220,17 @@ public:
     
     
     // Return dot product of vectors v1 and v2
-    double dot( Vector3 &v)
-    { return (x * v.x + y * v.y + z * v.z); }
+    friend double dot( Vector3 &v1, Vector3 &v2 )
+    { return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z); }
     
     // Return cross product of vectors v1 and v2
-    Vector3 cross( Vector3 &v)
+    friend Vector3 cross( Vector3 &v1, Vector3 &v2 )
     {
         Vector3 temp;     // Temporary 3-D vector
         
-        temp.x = y * v.z - z * v.y;
-        temp.y = z * v.x - x * v.z;
-        temp.z = x * v.y - y * v.x;
+        temp.x = v1.y * v2.z - v1.z * v2.y;
+        temp.y = v1.z * v2.x - v1.x * v2.z;
+        temp.z = v1.x * v2.y - v1.y * v2.x;
         
         return temp;
     }
@@ -272,6 +272,126 @@ public:
         projectedPoint.print();
         cout << "\n";
         return projectedPoint;
+    }
+};
+
+class Vector4 : public Space3   // 4-D vector
+{
+private:
+    float w;    // W-axis co-ordinate
+    
+public:
+    Vector4() : Space3() { };
+    
+    Vector4( double xval, double yval, double zval, double
+            wval ) : Space3( xval, yval, zval )
+    { w = (float) wval; }
+    
+    double getW() { return w; }
+    void setW( double wval ) { w = (float) wval; }
+    
+    // Return vector length
+    double length()
+    { return sqrt(x * x + y * y + z * z + w * w); }
+    
+    // Normalize vector
+    Vector4 &norm()
+    {
+        double len = length();
+        
+        if (len < MIN_VALUE)
+            len = 1.0;
+        
+        x /= (float) len;
+        y /= (float) len;
+        z /= (float) len;
+        w /= (float) len;
+        
+        return *this;
+    }
+    
+    // Multiply by scalar s
+    Vector4 &operator*=( double s )
+    {
+        x *= (float) s;
+        y *= (float) s;
+        z *= (float) s;
+        w *= (float) s;
+        
+        return *this;
+    }
+    
+    // Add vector v2 to vector v1
+    friend Vector4 operator+( Vector4 &v1, Vector4 &v2 )
+    {
+        Vector4 temp;     // Temporary 4-D vector
+        
+        temp.x = v1.x + v2.x;
+        temp.y = v1.y + v2.y;
+        temp.z = v1.z + v2.z;
+        temp.w = v1.w + v2.w;
+        
+        return temp;
+    }
+    
+    // Subtract vector v2 from vector v1
+    friend Vector4 operator-( Vector4 &v1, Vector4 &v2 )
+    {
+        Vector4 temp;     // Temporary 4-D vector
+        
+        temp.x = v1.x - v2.x;
+        temp.y = v1.y - v2.y;
+        temp.z = v1.z - v2.z;
+        temp.w = v1.w - v2.w;
+        
+        return temp;
+    }
+    
+    // Return dot product of vectors v1 and v2
+    friend double dot( Vector4 &v1, Vector4 &v2 )
+    { return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z +
+              v1.w * v2.w); }
+    
+    // Premultiply point by projective matrix
+    void ProjTransform( Point3 &p, double (*ptm)[4] )
+    {
+        x = (float) (ptm[0][0] * p.getX() + ptm[0][1] *
+                     p.getY() + ptm[0][2] * p.getZ() + ptm[0][3]);
+        y = (float) (ptm[1][0] * p.getX() + ptm[1][1] *
+                     p.getY() + ptm[1][2] * p.getZ() + ptm[1][3]);
+        z = (float) (ptm[2][0] * p.getX() + ptm[2][1] *
+                     p.getY() + ptm[2][2] * p.getZ() + ptm[2][3]);
+        w = (float) (ptm[3][0] * p.getX() + ptm[3][1] *
+                     p.getY() + ptm[3][2] * p.getZ() + ptm[3][3]);
+    }
+    
+    // Premultiply vector by projective matrix
+    void ProjTransform( Vector3 &p, double (*ptm)[4] )
+    {
+        x = (float) (ptm[0][0] * p.getX() + ptm[0][1] *
+                     p.getY() + ptm[0][2] * p.getZ() + ptm[0][3]);
+        y = (float) (ptm[1][0] * p.getX() + ptm[1][1] *
+                     p.getY() + ptm[1][2] * p.getZ() + ptm[1][3]);
+        z = (float) (ptm[2][0] * p.getX() + ptm[2][1] *
+                     p.getY() + ptm[2][2] * p.getZ() + ptm[2][3]);
+        w = (float) (ptm[3][0] * p.getX() + ptm[3][1] *
+                     p.getY() + ptm[3][2] * p.getZ() + ptm[3][3]);
+    }
+    
+    // Perform perspective division on point
+    void perspective( Point3 *pp )
+    {
+        pp->setX(x / w);
+        pp->setY(y / w);
+        pp->setZ(z / w);
+    }
+    
+    // Perform perspective division on vector
+    void perspective( Vector3 *pp )
+    {
+        pp->setX(x / w);
+        pp->setY(y / w);
+        pp->setZ(z / w);
     }
 };
 
