@@ -23,13 +23,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		016E94F21B2A06980096824F /* hemicube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = hemicube.h; path = RadiosityEngine/hemicube.h; sourceTree = SOURCE_ROOT; };
+		016E94F21B2A06980096824F /* general.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = general.h; path = RadiosityEngine/general.h; sourceTree = SOURCE_ROOT; };
 		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9EECE591B1FA8FE00C07F08 /* intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intersection.h; path = RadiosityEngine/intersection.h; sourceTree = SOURCE_ROOT; };
 		E9EECE5A1B1FA8FE00C07F08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = RadiosityEngine/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9EECE5B1B1FA8FE00C07F08 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = RadiosityEngine/point.h; sourceTree = SOURCE_ROOT; };
 		E9EECE611B23A15500C07F08 /* 3dintersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = 3dintersection.h; path = RadiosityEngine/3dintersection.h; sourceTree = SOURCE_ROOT; };
 		E9EECE621B23A15500C07F08 /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = vector.h; path = RadiosityEngine/vector.h; sourceTree = SOURCE_ROOT; };
+		F0631CBC1B2DE4170040FC5F /* patch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = patch.h; path = RadiosityEngine/patch.h; sourceTree = SOURCE_ROOT; };
+		F0631CBD1B2DEE740040FC5F /* hemicube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hemicube.h; sourceTree = SOURCE_ROOT; };
+		F0631CBE1B2DF2D60040FC5F /* poly.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = poly.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,7 +78,10 @@
 			children = (
 				E9EECE611B23A15500C07F08 /* 3dintersection.h */,
 				E9EECE621B23A15500C07F08 /* vector.h */,
-				016E94F21B2A06980096824F /* hemicube.h */,
+				016E94F21B2A06980096824F /* general.h */,
+				F0631CBC1B2DE4170040FC5F /* patch.h */,
+				F0631CBD1B2DEE740040FC5F /* hemicube.h */,
+				F0631CBE1B2DF2D60040FC5F /* poly.h */,
 			);
 			name = 3D;
 			sourceTree = "<group>";

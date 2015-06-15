@@ -12,26 +12,26 @@
 #include <string>
 #include <math.h>
 
-#include "vector.h"
+#include "hemicube.h"
 
 using namespace std;
 
 class ThreeDIntersection {
     
 private:
-    Vector _vector;
+    Vector3 _vector;
     HemiCubeFace _intersectingHemiCubeFace;
 public:
     ThreeDIntersection() {
         _intersectingHemiCubeFace = TOP_FACE;
     }
     
-    ThreeDIntersection(Vector Vector, HemiCubeFace intersectingHemiCubeFace) {
-        _vector = Vector;
+    ThreeDIntersection(Vector3 Vector3, HemiCubeFace intersectingHemiCubeFace) {
+        _vector = Vector3;
         _intersectingHemiCubeFace = intersectingHemiCubeFace;
     }
     
-    Vector getVector() {
+    Vector3 getVector() {
         return _vector;
     }
     
@@ -62,15 +62,15 @@ public:
         }
     }
     
-    void setVector(Vector Vector) {
-        _vector = Vector;
+    void setVector(Vector3 Vector3) {
+        _vector = Vector3;
     }
     
     void setIntersectingFace(HemiCubeFace intersectingHemiCubeFace) {
         _intersectingHemiCubeFace = intersectingHemiCubeFace;
     }
     
-    void intersect(Vector *vertex) {  // parametric form approach
+    void intersect(Vector3 *vertex) {  // parametric form approach
         if(DEBUG_MODE) {
             cout << "\nCalculating intersection of ";
             vertex->print();
@@ -99,8 +99,8 @@ public:
                       vertex->getY() > (-(vertex->getX()))) {
                 _intersectingHemiCubeFace = TOP_FACE;
             }
+            _vector = Vector3::findPointOnALine(Vector3(0,0,0), *vertex, _intersectingHemiCubeFace);
         }
-        _vector = Vector::findPointOnALine(Vector(0,0,0), *vertex,_intersectingHemiCubeFace);
     }
     
     void print() {
