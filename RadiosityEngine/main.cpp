@@ -21,7 +21,7 @@ int findPointToBeProjected(ThreeDIntersection[]);
 HemiCubeFace findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector3 findCommonVertex(HemiCubeFace[]);
 void generatePolygons(double, double, double, string);
-    
+void generateHemicubePatchCenters(int n);
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
@@ -142,7 +142,7 @@ void loop() {
                     break;
                 case '6':
                 {
-                    
+                    generateHemicubePatchCenters(10);
                 }
                     break;
                 case 'q':
@@ -218,6 +218,108 @@ void generatePolygons(double width, double height, double length, string filenam
         cout << "Error Generating object file. Try again\n";
     }
 
+}
+
+void generateHemicubePatchCenters(int n) {
+    Point3 top_buffer[10][10];
+    float delta;
+    delta = 2 / (float)n;
+    float x, y, z;
+    for ( int i = 0 ; i < HemiFaceNum; i++) { // for five faces of hemicube
+        switch (i) {
+            case TOP_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "TOP FACE\n";
+                for (int j = 0; j < n; j++) {
+                    for (int k=0; k < n; k++) {
+                        top_buffer[j][k] = Point3(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    z += delta;
+                }
+            }
+                break;
+            case FRONT_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nFRONT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = Point3(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+            }
+                break;
+            case BACK_FACE:
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "\nBACK FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = Point3(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+                break;
+            case LEFT_FACE:
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nLEFT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = Point3(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            case RIGHT_FACE:
+                x = 1;
+                y = 1;
+                z = 1;
+                cout << "\nRIGHT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = Point3(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void findAndPrintPatch(Vector3 point1, Vector3 point2, Vector3 point3) {

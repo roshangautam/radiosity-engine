@@ -353,7 +353,7 @@ public:
               v1.w * v2.w); }
     
     // Premultiply point by projective matrix
-    void ProjTransform( Point3 &p, double (*ptm)[4] )
+    void projTransform( Point3 &p, double (*ptm)[4] )
     {
         x = (float) (ptm[0][0] * p.getX() + ptm[0][1] *
                      p.getY() + ptm[0][2] * p.getZ() + ptm[0][3]);
@@ -366,7 +366,7 @@ public:
     }
     
     // Premultiply vector by projective matrix
-    void ProjTransform( Vector3 &p, double (*ptm)[4] )
+    void projTransform( Vector3 &p, double (*ptm)[4] )
     {
         x = (float) (ptm[0][0] * p.getX() + ptm[0][1] *
                      p.getY() + ptm[0][2] * p.getZ() + ptm[0][3]);
