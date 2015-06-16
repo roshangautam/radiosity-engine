@@ -25,6 +25,7 @@ Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersecti
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
 void generatePolygons(double, double, double, string);
+void generateHemicubeCellCenters(int n);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -50,7 +51,7 @@ void loop() {
         cout << "(2)Enter Coordinates for a 2D line segment and Hemicube intersection\n";
         cout << "(3)Enter Coordinates for a Vertex (3D) and Hemicube intersection\n";
         cout << "(4)Enter Coordinates to calculate shadow (patch) of a triangle (3D) on Hemicube surface\n";
-        cout << "(5)Generate environment patch vertices\n";
+        cout << "(5)Generate Hemicube cell centers\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -132,22 +133,10 @@ void loop() {
                 }
                     break;
                 case '5':
-                {
-                    cout << "Enter the height of the room:";
-                    cin >> height;
-                    cout << "Enter the width of the room:";
-                    cin >> width;
-                    cout << "Enter the length of the room:";
-                    cin >> length;
-                    cout << "Enter the height of the box:";
-                    cin >> boxHeight;
-                    cout << "Enter the width of the box:";
-                    cin >> boxWidth;
-                    cout << "Enter the length of the box:";
-                    cin >> boxLength;
-                    generatePolygons(height, width, length, "room.obj");
-                    generatePolygons(boxHeight, boxWidth, boxLength, "box.obj");
-                }
+                    int n;
+                    cout << "Enter the resolution for hemicube:";
+                    cin >> n;
+                    generateHemicubeCellCenters(n);
                     break;
                 case 'q':
                 case 'Q':
@@ -229,8 +218,49 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
             pointOnEdges[0].print();
             cout << " on " << patchPoints[2].getHumanReadableIntersectingFace() << " \n " ;
         } else {
-            // patch is in two sides of the cube // Need 2 new points
+            // patch is in two sides of the cube
+
             int index = findPointToBeProjected(patchPoints);
+            
+//            Vector origin;
+//            Vector a = givenPoints[0] - origin;
+//            Vector b = givenPoints[1] - origin;
+//            Vector c = a.cross(b);
+//            c.normalizeVector();
+//            
+//            Vector d = givenPoints[0] - origin;
+//            Vector e = givenPoints[2] - origin;
+//            Vector f = d.cross(e);
+//            f.normalizeVector();
+//            
+//            Vector g = givenPoints[1] - origin;
+//            Vector h = givenPoints[2] - origin;
+//            Vector i = g.cross(h);
+//            i.normalizeVector();
+//            
+//            int secondIndex = (index == 0 || index ==  1 ? index + 1 : 0);
+//            if (patchPoints[index].getIntersectingFace() == TOP_FACE && patchPoints[secondIndex].getIntersectingFace() == RIGHT_FACE) {
+//                Vector j(1,1,1);
+//                Vector k(1,1,-1);
+//            } else if (patchPoints[index].getIntersectingFace() == TOP_FACE && patchPoints[secondIndex].getIntersectingFace() == LEFT_FACE) {
+//                Vector j(-1,1,1);
+//                Vector k(-1,1,-1);
+//            } else if (patchPoints[index].getIntersectingFace() == TOP_FACE && patchPoints[secondIndex].getIntersectingFace() == FRONT_FACE) {
+//                Vector j(1,1,1);
+//                Vector k(-1,1,1);
+//            } else if (patchPoints[index].getIntersectingFace() == TOP_FACE && patchPoints[secondIndex].getIntersectingFace() == BACK_FACE) {
+//                Vector j(1,1,-1);
+//                Vector k(-1,1,-1);
+//            } else if (patchPoints[index].getIntersectingFace() == FRONT_FACE && patchPoints[secondIndex].getIntersectingFace() == LEFT_FACE) {
+//                Vector j(-1,1,1);
+//            } else if (patchPoints[index].getIntersectingFace() == FRONT_FACE && patchPoints[secondIndex].getIntersectingFace() == RIGHT_FACE) {
+//                Vector j(1,1,1);
+//            } else if (patchPoints[index].getIntersectingFace() == BACK_FACE && patchPoints[secondIndex].getIntersectingFace() == LEFT_FACE) {
+//                Vector j(-1,1,-1);
+//            } else if (patchPoints[index].getIntersectingFace() == BACK_FACE && patchPoints[secondIndex].getIntersectingFace() == RIGHT_FACE) {
+//                Vector j(1,1,-1);
+//            }
+
             if(index >= 0) {
                 projectionFace = findProjectionFace(patchPoint1, patchPoint2, patchPoint3);
                 projectedPoint = findPointBetweenTwoPoints(Vector(0,0,0), givenPoints[index], projectionFace);
@@ -420,65 +450,107 @@ Vector findCommonVertex(Face faces[]) {
     return Vector(0,0,0);
 }
 
-void generatePolygons(double width, double height, double length, string filename) {
-    // WE ASSUME THE BOTTOM LEFT CORNER OF THE ROOM IS (0,0,0)
-    ofstream objectFile;
-    objectFile.open (filename);
-    double factor = (4 * (( width * height) + (length * height) + (width * length))) / POLY_COUNT;
-    double DELTA = floor(sqrt(factor) * 100) / 100;
-    if (objectFile) {
-        cout << "File Generated. Now generating polygons\n";
-        // FRONT AND BACK
-        int i = 0; //polycount
-        for (float z = 0; z <= length; z += length) {
-            for (float y = 0; y < height; y += DELTA) {
-                for (float x =0; x < width; x+= DELTA) {
-                    objectFile << x << " " << y << " " << z << "\n";
-                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-                    i++;
-                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
-                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-                    i++;
+
+void generateHemicubeCellCenters(int n) {
+    Vector** top_buffer = new Vector*[n];
+    for(int i = 0; i < n; ++i)
+        top_buffer[i] = new Vector[n];
+    float delta;
+    delta = 2 / (float)n;
+    float x, y, z;
+    for ( int i = 0 ; i < 5 ; i++) { // for five faces of hemicube
+        switch (i) {
+            case TOP_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "TOP FACE\n";
+                for (int j = 0; j < n; j++) {
+                    for (int k=0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    z += delta;
                 }
             }
-        }
-        // LEFT AND RIGHT
-        for (float x = 0; x <= width; x += width) {
-            for (float y = 0; y < height; y += DELTA) {
-                for (float z =0; z < length; z+= DELTA) {
-                    objectFile << x << " " << y << " " << z << "\n";
-                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-                    i++;
-                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
-                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-                    i++;
+                break;
+            case FRONT_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nFRONT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
                 }
             }
-        }
-        // TOP AND BOTTTOM
-        for (float y = 0; y <= height; y += height) {
-            for (float x = 0; x < width; x += DELTA) {
-                for (float z =0; z < length; z+= DELTA) {
-                    objectFile << x << " " << y << " " << z << "\n";
-                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
-                    i++;
-                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
-                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-                    i++;
+                break;
+            case BACK_FACE:
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "\nBACK FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
                 }
-            }
+                break;
+            case LEFT_FACE:
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nLEFT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            case RIGHT_FACE:
+                x = 1;
+                y = 1;
+                z = 1;
+                cout << "\nRIGHT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            default:
+                break;
         }
-        cout << "Polygon count:" << i << " for " << filename << "\n";
-        objectFile.close();
-        cout << "Done Generating Polygons\n";
-    } else {
-        cout << "Error Generating object file. Try again\n";
     }
-    
 }
