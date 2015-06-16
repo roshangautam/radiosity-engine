@@ -24,6 +24,7 @@ int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
+void generateHemicubeCellCenters(int n);
 void generatePolygons(double, double, double, string);
 
 int main(int argc, const char * argv[]) {
@@ -50,7 +51,8 @@ void loop() {
         cout << "(2)Enter Coordinates for a 2D line segment and Hemicube intersection\n";
         cout << "(3)Enter Coordinates for a Vertex (3D) and Hemicube intersection\n";
         cout << "(4)Enter Coordinates to calculate shadow (patch) of a triangle (3D) on Hemicube surface\n";
-        cout << "(5)Generate environment patch vertices\n";
+        cout << "(5)Generate Hemicube cell centers\n";
+        cout << "(6)Generate environment patch vertices\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -132,6 +134,12 @@ void loop() {
                 }
                     break;
                 case '5':
+                    int n;
+                    cout << "Enter the resolution for hemicube:";
+                    cin >> n;
+                    generateHemicubeCellCenters(n);
+                    break;
+                case '6':
                 {
                     cout << "Enter the height of the room:";
                     cin >> height;
@@ -418,6 +426,110 @@ Vector findCommonVertex(Face faces[]) {
         return Vector(1,1,-1);
     }
     return Vector(0,0,0);
+}
+
+void generateHemicubeCellCenters(int n) {
+    Vector** top_buffer = new Vector*[n];
+    for(int i = 0; i < n; ++i)
+        top_buffer[i] = new Vector[n];
+    float delta;
+    delta = 2 / (float)n;
+    float x, y, z;
+    for ( int i = 0 ; i < 5 ; i++) { // for five faces of hemicube
+        switch (i) {
+            case TOP_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "TOP FACE\n";
+                for (int j = 0; j < n; j++) {
+                    for (int k=0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    z += delta;
+                }
+            }
+                break;
+            case FRONT_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nFRONT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+            }
+                break;
+            case BACK_FACE:
+                x = -1;
+                y = 1;
+                z = -1;
+                cout << "\nBACK FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+                break;
+            case LEFT_FACE:
+                x = -1;
+                y = 1;
+                z = 1;
+                cout << "\nLEFT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            case RIGHT_FACE:
+                x = 1;
+                y = 1;
+                z = 1;
+                cout << "\nRIGHT FACE\n";
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:";
+                        top_buffer[j][k].print();
+                        cout << "\n";
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void generatePolygons(double width, double height, double length, string filename) {
