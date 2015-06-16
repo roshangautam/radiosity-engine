@@ -24,7 +24,6 @@ int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
-void generatePolygons(double, double, double, string);
 void generateHemicubeCellCenters(int n);
 
 int main(int argc, const char * argv[]) {
@@ -43,7 +42,6 @@ void loop() {
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
     ThreeDIntersection threeDIntersection;
-    double length = 0.0, width = 0.0, height = 0.0, boxLength = 0.0, boxWidth = 0.0, boxHeight = 0.0;
     char c = '1';
     while(1) {
         cout << "\nOptions:\n";
