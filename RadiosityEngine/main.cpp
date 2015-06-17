@@ -18,15 +18,17 @@ using namespace std;
 int POLY_COUNT = 10000;
 
 void loop();
-ThreeDIntersection* findAndPrintPatch(Vector[]);
+void findAndPrintPatch(Vector[]);
 void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
-void generateHemicubeCellCenters(int n, Vector[]);
+void generateHemicubeCellCenters(int, Vector[]);
 void generatePolygons(double, double, double, string);
 Vector calculateAllT(Vector[]);
+bool onSameSide(Vector, Vector, Vector, Vector);
+bool pointInTriangle(Vector, Vector, Vector, Vector);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -202,7 +204,7 @@ void loop() {
     }
 }
 
-ThreeDIntersection* findAndPrintPatch(Vector givenPoints[]) {
+void findAndPrintPatch(Vector givenPoints[]) {
     ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
 //    Vector givenPoints[3] = {point1, point2, point3 };
     Vector projectedPoint;
@@ -336,7 +338,7 @@ ThreeDIntersection* findAndPrintPatch(Vector givenPoints[]) {
             }
         }
     }
-    return patchPoints;
+//    return patchPoints;
 }
 
 void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
@@ -699,4 +701,25 @@ Vector calculateAllT(Vector givenPoints[]) {
     Vector normal = a.cross(b);
     cout << "Normal of the plane ( a X b) : "; normal.print(); cout << "\n";
     return normal;
+}
+
+bool onSameSide(Vector p, Vector a, Vector b, Vector c) {
+    Vector cb = c - b;
+    Vector pb = p - b;
+    Vector pa = p - a;
+    Vector cp1 = cb.cross(pb);
+    Vector cp2 = cb.cross(pa);
+    if (cp1.dot(cp2) >= 0)
+        return true;
+    else
+        return false;
+}
+
+bool pointInTriangle(Vector p, Vector a, Vector b, Vector c) {
+    if (onSameSide(p, a, b, c) &&
+        onSameSide(p, b, a, c) &&
+        onSameSide(p, c, a, b))
+        return true;
+    else
+        return false;
 }
