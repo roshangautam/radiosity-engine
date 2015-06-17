@@ -10,6 +10,8 @@
 #ifndef Radiosit_yEngine_vector_h
 #define Radiosit_yEngine_vector_h
 
+#include <iomanip>
+
 class Vector {
     float _x, _y, _z;
 public:
@@ -62,8 +64,8 @@ public:
         cin >> _y;
         cout << "Enter z:";
         cin >> _z;
-        if (_x == 0 ||
-            _y == 0 ||
+        if (_x == 0 &&
+            _y == 0 &&
             _z == 0) {
             return false;
         }
@@ -71,7 +73,7 @@ public:
     }
     
     void print() {
-        cout << "(" << _x << "," << _y << "," << _z << ")";
+        cout << "(" << setprecision(2) << _x << "," << setprecision(2) << _y << "," << setprecision(2) << _z << ")";
     }
     
     //calculate and return the magnitude of this vector

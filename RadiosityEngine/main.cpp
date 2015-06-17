@@ -18,14 +18,15 @@ using namespace std;
 int POLY_COUNT = 10000;
 
 void loop();
-void findAndPrintPatch(Vector,Vector,Vector);
+ThreeDIntersection* findAndPrintPatch(Vector[]);
 void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
-void generateHemicubeCellCenters(int n);
+void generateHemicubeCellCenters(int n, Vector[]);
 void generatePolygons(double, double, double, string);
+Vector calculateAllT(Vector[]);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -53,6 +54,7 @@ void loop() {
         cout << "(4)Enter Coordinates to calculate shadow (patch) of a triangle (3D) on Hemicube surface\n";
         cout << "(5)Generate Hemicube cell centers\n";
         cout << "(6)Generate environment patch vertices\n";
+        cout << "(7)Calculate all t value from hemicube cells to a given set of triangle vertices\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -130,14 +132,18 @@ void loop() {
                         cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
                         break;
                     }
-                    findAndPrintPatch(vertex, vertex1, vertex2);
+                    Vector givenPonts[3] = {vertex, vertex1, vertex2};
+                    findAndPrintPatch(givenPonts);
                 }
                     break;
                 case '5':
+                {
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-                    generateHemicubeCellCenters(n);
+                    Vector givenPoints[3];
+                    generateHemicubeCellCenters(n, givenPoints);
+                }
                     break;
                 case '6':
                 {
@@ -157,6 +163,33 @@ void loop() {
                     generatePolygons(boxHeight, boxWidth, boxLength, "box.obj");
                 }
                     break;
+                case '7':
+                {
+                    cout << "Enter Coordinates for first vertex:\n";
+                    if(!vertex.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    cout << "Enter Coordinates for second vertex:\n";
+                    if(!vertex1.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    cout << "Enter Coordinates for third vertex\n";
+                    if(!vertex2.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    
+                    Vector givenPoints[3] = {vertex, vertex1, vertex2};
+
+                    
+                    int n;
+                    cout << "Enter the resolution for hemicube:";
+                    cin >> n;
+                    generateHemicubeCellCenters(n, givenPoints);
+                }
+                    break;
                 case 'q':
                 case 'Q':
                     cout << "\n--- End of Program ---\n";
@@ -169,16 +202,16 @@ void loop() {
     }
 }
 
-void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
+ThreeDIntersection* findAndPrintPatch(Vector givenPoints[]) {
     ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
-    Vector givenPoints[3] = {point1, point2, point3 };
+//    Vector givenPoints[3] = {point1, point2, point3 };
     Vector projectedPoint;
     Vector pointOnEdges[4];
     Face projectionFace;
     
-    patchPoint1.intersect(&point1);
-    patchPoint2.intersect(&point2);
-    patchPoint3.intersect(&point3);
+    patchPoint1.intersect(&givenPoints[0]);
+    patchPoint2.intersect(&givenPoints[1]);
+    patchPoint3.intersect(&givenPoints[2]);
     
     
     ThreeDIntersection patchPoints[3] = {patchPoint1, patchPoint2, patchPoint3};
@@ -303,8 +336,7 @@ void findAndPrintPatch(Vector point1, Vector point2, Vector point3) {
             }
         }
     }
-    
-    
+    return patchPoints;
 }
 
 void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
@@ -428,10 +460,28 @@ Vector findCommonVertex(Face faces[]) {
     return Vector(0,0,0);
 }
 
-void generateHemicubeCellCenters(int n) {
+void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
+    
+    Vector normal = calculateAllT(givenPoints);
+    float d = normal.dot(givenPoints[0]);
+    cout << "D : " << d << "\n";
+    float dot = 0.0;
     Vector** top_buffer = new Vector*[n];
-    for(int i = 0; i < n; ++i)
+    Vector** front_buffer = new Vector*[n];
+    Vector** back_buffer = new Vector*[n];
+    Vector** left_buffer = new Vector*[n];
+    Vector** right_buffer = new Vector*[n];
+    
+    float t[n * n/2 * 6];
+    int counter = 0;
+    for(int i = 0; i < n; ++i) {
         top_buffer[i] = new Vector[n];
+        front_buffer[i] = new Vector[n];
+        back_buffer[i] = new Vector[n];
+        left_buffer[i] = new Vector[n];
+        right_buffer[i] = new Vector[n];
+    }
+    
     float delta;
     delta = 2 / (float)n;
     float x, y, z;
@@ -446,10 +496,20 @@ void generateHemicubeCellCenters(int n) {
                 for (int j = 0; j < n; j++) {
                     for (int k=0; k < n; k++) {
                         top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
-                        cout << "Cell[" << j << "][" << k << "]:";
+                        cout << "Cell[" << j << "][" << k << "]:\tCenter : " ;;
                         top_buffer[j][k].print();
+                        dot = normal.dot(top_buffer[j][k]);
+                        cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
+                        if (dot == 0) {
+                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        } else {
+                            t[counter] = d / dot ;
+                        }
+                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                        counter++;
                         cout << "\n";
                         x += delta;
+
                     }
                     x = -1;
                     z += delta;
@@ -464,9 +524,18 @@ void generateHemicubeCellCenters(int n) {
                 cout << "\nFRONT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
-                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
-                        cout << "Cell[" << j << "][" << k << "]:";
-                        top_buffer[j][k].print();
+                        front_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:\tCenter : " ;;
+                        front_buffer[j][k].print();
+                        dot = normal.dot(front_buffer[j][k]);
+                        cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
+                        if (dot == 0) {
+                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        } else {
+                            t[counter] = d / dot ;
+                        }
+                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                        counter++;
                         cout << "\n";
                         x += delta;
                     }
@@ -482,9 +551,18 @@ void generateHemicubeCellCenters(int n) {
                 cout << "\nBACK FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
-                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
-                        cout << "Cell[" << j << "][" << k << "]:";
-                        top_buffer[j][k].print();
+                        back_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        cout << "Cell[" << j << "][" << k << "]:\tCenter : " ;;
+                        back_buffer[j][k].print();
+                        dot = normal.dot(back_buffer[j][k]);
+                        cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
+                        if (dot == 0) {
+                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        } else {
+                            t[counter] = d / dot ;
+                        }
+                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                        counter++;
                         cout << "\n";
                         x += delta;
                     }
@@ -499,9 +577,18 @@ void generateHemicubeCellCenters(int n) {
                 cout << "\nLEFT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
-                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
-                        cout << "Cell[" << j << "][" << k << "]:";
-                        top_buffer[j][k].print();
+                        left_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:\tCenter : " ;;
+                        left_buffer[j][k].print();
+                        dot = normal.dot(left_buffer[j][k]);
+                        cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
+                        if (dot == 0) {
+                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        } else {
+                            t[counter] = d / dot ;
+                        }
+                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                        counter++;
                         cout << "\n";
                         z -= delta;
                     }
@@ -516,9 +603,18 @@ void generateHemicubeCellCenters(int n) {
                 cout << "\nRIGHT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
-                        top_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
-                        cout << "Cell[" << j << "][" << k << "]:";
-                        top_buffer[j][k].print();
+                        right_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        cout << "Cell[" << j << "][" << k << "]:\tCenter : " ;
+                        right_buffer[j][k].print();
+                        dot = normal.dot(right_buffer[j][k]);
+                        cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
+                        if (dot == 0) {
+                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        } else {
+                            t[counter] = d / dot ;
+                        }
+                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                        counter++;
                         cout << "\n";
                         z -= delta;
                     }
@@ -593,4 +689,14 @@ void generatePolygons(double width, double height, double length, string filenam
         cout << "Error Generating object file. Try again\n";
     }
     
+}
+
+Vector calculateAllT(Vector givenPoints[]) {
+    Vector a = givenPoints[1] - givenPoints[0];
+    Vector b = givenPoints[2] - givenPoints[1];
+    cout << "Vector (v2 - v1) : "; a.print(); cout << "\n";
+    cout << "Vector (v3 - v2) : "; b.print(); cout << "\n";
+    Vector normal = a.cross(b);
+    cout << "Normal of the plane ( a X b) : "; normal.print(); cout << "\n";
+    return normal;
 }
