@@ -9,9 +9,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <istream>
+#include <sstream>
+#include <vector>
 
 #include "intersection.h"
 #include "3dintersection.h"
+#include "patch.h"
 
 using namespace std;
 
@@ -24,11 +28,12 @@ int findPointToBeProjected(ThreeDIntersection[]);
 Face findProjectionFace(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 Vector findPointBetweenTwoPoints(Vector, Vector, Face);
 Vector findCommonVertex(Face[]);
-void generateHemicubeCellCenters(int, Vector[]);
+void generateHemicubeCellCenters(int, Patch);
 void generatePolygons(double, double, double, string);
-Vector calculateAllT(Vector[]);
+Vector calculateNormal(Vector[]);
 bool onSameSide(Vector, Vector, Vector, Vector);
 bool pointInTriangle(Vector, Vector, Vector, Vector);
+void findClosestObject(int, float[], Vector[], Vector[]);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -46,7 +51,8 @@ void loop() {
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
     ThreeDIntersection threeDIntersection;
-    double length = 0.0, width = 0.0, height = 0.0, boxLength = 0.0, boxWidth = 0.0, boxHeight = 0.0;
+    double length = 0.0, width = 0.0, height = 0.0;
+//    double boxLength = 0.0, boxWidth = 0.0, boxHeight = 0.0;
     char c = '1';
     while(1) {
         cout << "\nOptions:\n";
@@ -143,8 +149,8 @@ void loop() {
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-                    Vector givenPoints[3];
-                    generateHemicubeCellCenters(n, givenPoints);
+                    Patch patch;
+                    generateHemicubeCellCenters(n, patch);
                 }
                     break;
                 case '6':
@@ -155,41 +161,55 @@ void loop() {
                     cin >> width;
                     cout << "Enter the length of the room:";
                     cin >> length;
-                    cout << "Enter the height of the box:";
-                    cin >> boxHeight;
-                    cout << "Enter the width of the box:";
-                    cin >> boxWidth;
-                    cout << "Enter the length of the box:";
-                    cin >> boxLength;
+//                    cout << "Enter the height of the box:";
+//                    cin >> boxHeight;
+//                    cout << "Enter the width of the box:";
+//                    cin >> boxWidth;
+//                    cout << "Enter the length of the box:";
+//                    cin >> boxLength;
                     generatePolygons(height, width, length, "room.obj");
-                    generatePolygons(boxHeight, boxWidth, boxLength, "box.obj");
+//                    generatePolygons(boxHeight, boxWidth, boxLength, "box.obj");
                 }
                     break;
                 case '7':
                 {
-                    cout << "Enter Coordinates for first vertex:\n";
-                    if(!vertex.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
-                    cout << "Enter Coordinates for second vertex:\n";
-                    if(!vertex1.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
-                    cout << "Enter Coordinates for third vertex\n";
-                    if(!vertex2.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
+//                    cout << "Enter Coordinates for first vertex:\n";
+//                    if(!vertex.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
+//                    cout << "Enter Coordinates for second vertex:\n";
+//                    if(!vertex1.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
+//                    cout << "Enter Coordinates for third vertex\n";
+//                    if(!vertex2.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
                     
-                    Vector givenPoints[3] = {vertex, vertex1, vertex2};
-
-                    
+//                    Vector givenPoints[3] = {vertex, vertex1, vertex2};
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-                    generateHemicubeCellCenters(n, givenPoints);
+                    ifstream objectFile("room.obj");
+                    if (objectFile.is_open()) {
+                        std::istream_iterator<double> start(objectFile), end;
+                        std::vector<double> lines(start, end);
+
+                        Vector *vertices = new Vector[lines.size()];
+                        Patch *patches = new Patch[lines.size()/9];
+                        for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
+                            vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
+                        }
+                        int polyCount;
+                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
+                            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
+                            polyCount++;
+                        }
+                        generateHemicubeCellCenters(n, patches[0]);
+                    }
                 }
                     break;
                 case 'q':
@@ -462,9 +482,17 @@ Vector findCommonVertex(Face faces[]) {
     return Vector(0,0,0);
 }
 
-void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
+struct hemiDelta {
+    float t;
+    Vector center;
+};
+
+void generateHemicubeCellCenters(int n, Patch patch) {
     
-    Vector normal = calculateAllT(givenPoints);
+    patch.calcCenter();
+    patch.getCenter().print();
+    Vector *givenPoints = patch.getVertices();
+    Vector normal = calculateNormal(patch.getVertices());
     float d = normal.dot(givenPoints[0]);
     cout << "D : " << d << "\n";
     float dot = 0.0;
@@ -474,8 +502,6 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
     Vector** left_buffer = new Vector*[n];
     Vector** right_buffer = new Vector*[n];
     
-    float t[n * n/2 * 6];
-    int counter = 0;
     for(int i = 0; i < n; ++i) {
         top_buffer[i] = new Vector[n];
         front_buffer[i] = new Vector[n];
@@ -484,6 +510,11 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
         right_buffer[i] = new Vector[n];
     }
     
+    int length = n * (n/2) * 6;
+    float t[length];
+    Vector *centers = new Vector[length];
+    int counter = 0;
+    
     float delta;
     delta = 2 / (float)n;
     float x, y, z;
@@ -491,9 +522,9 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
         switch (i) {
             case TOP_FACE:
             {
-                x = -1;
-                y = 1;
-                z = -1;
+                x = -1 + patch.getCenter().getX();
+                y = 1 + patch.getCenter().getY();
+                z = -1 + patch.getCenter().getZ();
                 cout << "TOP FACE\n";
                 for (int j = 0; j < n; j++) {
                     for (int k=0; k < n; k++) {
@@ -502,13 +533,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                         top_buffer[j][k].print();
                         dot = normal.dot(top_buffer[j][k]);
                         cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
-                        if (dot == 0) {
-                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        if (dot != 0) {
+                            float preT = d / dot;
+                            if (preT > 0) {
+                                t[counter] = preT;
+                                centers[counter] = top_buffer[j][k];
+                                cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                                counter++;
+                            } else {
+                                cout << setw(10) << "\tT : " << setprecision(2) << preT ;
+                            }
                         } else {
-                            t[counter] = d / dot ;
+                            cout << setw(10) << "\tT : doesn't intersect";
                         }
-                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
-                        counter++;
                         cout << "\n";
                         x += delta;
 
@@ -520,9 +557,9 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                 break;
             case FRONT_FACE:
             {
-                x = -1;
-                y = 1;
-                z = 1;
+                x = -1 + patch.getCenter().getX();
+                y = 1 + patch.getCenter().getY();
+                z = 1 + patch.getCenter().getZ();
                 cout << "\nFRONT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -531,13 +568,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                         front_buffer[j][k].print();
                         dot = normal.dot(front_buffer[j][k]);
                         cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
-                        if (dot == 0) {
-                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        if (dot != 0) {
+                            float preT = d / dot;
+                            if (preT > 0) {
+                                t[counter] = preT;
+                                centers[counter] = front_buffer[j][k];
+                                cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                                counter++;
+                            } else {
+                                cout << setw(10) << "\tT : " << setprecision(2) << preT ;
+                            }
                         } else {
-                            t[counter] = d / dot ;
+                            cout << setw(10) << "\tT : doesn't intersect";
                         }
-                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
-                        counter++;
                         cout << "\n";
                         x += delta;
                     }
@@ -547,9 +590,9 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
             }
                 break;
             case BACK_FACE:
-                x = -1;
-                y = 1;
-                z = -1;
+                x = -1 + patch.getCenter().getX();
+                y = 1 + patch.getCenter().getY();
+                z = -1 + patch.getCenter().getZ();
                 cout << "\nBACK FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -558,13 +601,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                         back_buffer[j][k].print();
                         dot = normal.dot(back_buffer[j][k]);
                         cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
-                        if (dot == 0) {
-                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        if (dot != 0) {
+                            float preT = d / dot;
+                            if (preT > 0) {
+                                t[counter] = preT;
+                                centers[counter] = back_buffer[j][k];
+                                cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                                counter++;
+                            } else {
+                                cout << setw(10) << "\tT : " << setprecision(2) << preT ;
+                            }
                         } else {
-                            t[counter] = d / dot ;
+                            cout << setw(10) << "\tT : doesn't intersect";
                         }
-                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
-                        counter++;
                         cout << "\n";
                         x += delta;
                     }
@@ -573,9 +622,9 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                 }
                 break;
             case LEFT_FACE:
-                x = -1;
-                y = 1;
-                z = 1;
+                x = -1 + patch.getCenter().getX();
+                y = 1 + patch.getCenter().getY();
+                z = 1 + patch.getCenter().getZ();
                 cout << "\nLEFT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -584,13 +633,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                         left_buffer[j][k].print();
                         dot = normal.dot(left_buffer[j][k]);
                         cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
-                        if (dot == 0) {
-                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        if (dot != 0) {
+                            float preT = d / dot;
+                            if (preT > 0) {
+                                t[counter] = preT;
+                                centers[counter] = left_buffer[j][k];
+                                cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                                counter++;
+                            } else {
+                                cout << setw(10) << "\tT : " << setprecision(2) << preT ;
+                            }
                         } else {
-                            t[counter] = d / dot ;
+                            cout << setw(10) << "\tT : doesn't intersect";
                         }
-                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
-                        counter++;
                         cout << "\n";
                         z -= delta;
                     }
@@ -599,9 +654,9 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                 }
                 break;
             case RIGHT_FACE:
-                x = 1;
-                y = 1;
-                z = 1;
+                x = 1 + patch.getCenter().getX();
+                y = 1 + patch.getCenter().getY();
+                z = 1 + patch.getCenter().getZ();
                 cout << "\nRIGHT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -610,13 +665,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                         right_buffer[j][k].print();
                         dot = normal.dot(right_buffer[j][k]);
                         cout << setw(20) << "\tDOT Product : " << setprecision(2) << dot;
-                        if (dot == 0) {
-                            t[counter] = 999999.0; // normal is perpendicular to ray, never intersects
+                        if (dot != 0) {
+                            float preT = d / dot;
+                            if (preT > 0) {
+                                t[counter] = preT;
+                                centers[counter] = right_buffer[j][k];
+                                cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
+                                counter++;
+                            } else {
+                                cout << setw(10) << "\tT : " << setprecision(2) << preT ;
+                            }
                         } else {
-                            t[counter] = d / dot ;
+                            cout << setw(10) << "\tT : doesn't intersect";
                         }
-                        cout << setw(10) << "\tT : " << setprecision(2) << t[counter] ;
-                        counter++;
                         cout << "\n";
                         z -= delta;
                     }
@@ -628,18 +689,19 @@ void generateHemicubeCellCenters(int n, Vector givenPoints[]) {
                 break;
         }
     }
+    findClosestObject(counter, t, centers, givenPoints);
 }
 
 void generatePolygons(double width, double height, double length, string filename) {
     // WE ASSUME THE BOTTOM LEFT CORNER OF THE ROOM IS (0,0,0)
     ofstream objectFile;
     objectFile.open (filename);
-    double factor = (4 * (( width * height) + (length * height) + (width * length))) / POLY_COUNT;
+    double factor = (4 * (( width * height) + (length * height) + (width * length))) / POLY_COUNT ;
     double DELTA = floor(sqrt(factor) * 100) / 100;
     if (objectFile) {
         cout << "File Generated. Now generating polygons\n";
         // FRONT AND BACK
-        int i = 0; //polycount
+        int i = 1; //polycount
         for (float z = 0; z <= length; z += length) {
             for (float y = 0; y < height; y += DELTA) {
                 for (float x =0; x < width; x+= DELTA) {
@@ -693,7 +755,7 @@ void generatePolygons(double width, double height, double length, string filenam
     
 }
 
-Vector calculateAllT(Vector givenPoints[]) {
+Vector calculateNormal(Vector givenPoints[]) {
     Vector a = givenPoints[1] - givenPoints[0];
     Vector b = givenPoints[2] - givenPoints[1];
     cout << "Vector (v2 - v1) : "; a.print(); cout << "\n";
@@ -701,6 +763,26 @@ Vector calculateAllT(Vector givenPoints[]) {
     Vector normal = a.cross(b);
     cout << "Normal of the plane ( a X b) : "; normal.print(); cout << "\n";
     return normal;
+}
+
+void findClosestObject(int length, float t[], Vector centers[], Vector givenPoints[]) {
+    float tMin = t[0];
+    int minIndex = 0;
+    
+    for ( int i = 1;  i < length;  i++ ) {
+        if ( t[i] > 0 &&
+            t[i] < tMin ) {
+            tMin = t[i] ;
+            minIndex = i;
+        }
+    }
+    cout << tMin << ":" << minIndex;
+    Vector testPoint;
+    testPoint.setX(tMin * centers[minIndex].getX());
+    testPoint.setY(tMin * centers[minIndex].getY());
+    testPoint.setZ(tMin * centers[minIndex].getZ());
+
+    cout << pointInTriangle(testPoint, givenPoints[0], givenPoints[1], givenPoints[2]);
 }
 
 bool onSameSide(Vector p, Vector a, Vector b, Vector c) {

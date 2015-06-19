@@ -106,6 +106,16 @@ public:
         return Vector(_x - vec._x, _y - vec._y, _z - vec._z);
     }
     
+    // Divide/assign by scalar s
+    Vector &operator/=( double s )
+    {
+        _x /= (float) s;
+        _y /= (float) s;
+        _z /= (float) s;
+        
+        return *this;
+    }
+    
     //normalize this vector
     void normalizeVector()
     {
