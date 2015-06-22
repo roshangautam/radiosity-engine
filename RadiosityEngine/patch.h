@@ -50,5 +50,11 @@ public:
         center.setY(cv.getY());
         center.setZ(cv.getZ());
     }
+    
+    void printPatch() {
+        for (int i =0 ; i < 3; i++) {
+            vertices[i].print();
+        }
+    }
 };
 #endif

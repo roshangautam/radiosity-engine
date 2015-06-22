@@ -173,43 +173,45 @@ void loop() {
                     break;
                 case '7':
                 {
-//                    cout << "Enter Coordinates for first vertex:\n";
-//                    if(!vertex.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-//                    cout << "Enter Coordinates for second vertex:\n";
-//                    if(!vertex1.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-//                    cout << "Enter Coordinates for third vertex\n";
-//                    if(!vertex2.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-                    
-//                    Vector givenPoints[3] = {vertex, vertex1, vertex2};
+                    cout << "Enter Coordinates for first vertex:\n";
+                    if(!vertex.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    cout << "Enter Coordinates for second vertex:\n";
+                    if(!vertex1.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    cout << "Enter Coordinates for third vertex\n";
+                    if(!vertex2.read()) {
+                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+                        break;
+                    }
+                    Patch patch;
+                    patch.setVertices(vertex, vertex1, vertex2);
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-                    ifstream objectFile("room.obj");
-                    if (objectFile.is_open()) {
-                        std::istream_iterator<double> start(objectFile), end;
-                        std::vector<double> lines(start, end);
-
-                        Vector *vertices = new Vector[lines.size()];
-                        Patch *patches = new Patch[lines.size()/9];
-                        for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
-                            vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
-                        }
-                        int polyCount;
-                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
-                            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
-                            polyCount++;
-                        }
-                        generateHemicubeCellCenters(n, patches[0]);
-                    }
+//                    ifstream objectFile("room.obj");
+//                    if (objectFile.is_open()) {
+//                        std::istream_iterator<double> start(objectFile), end;
+//                        std::vector<double> lines(start, end);
+//
+//                        Vector *vertices = new Vector[lines.size()];
+//                        Patch *patches = new Patch[lines.size()/9];
+//                        for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
+//                            vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
+//                        }
+//                        int polyCount;
+//                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
+//                            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
+//                            polyCount++;
+//                        }
+//                        patches[3].printPatch();
+//                        generateHemicubeCellCenters(n, patch);
+//                    }
+                    generateHemicubeCellCenters(n, patch);
                 }
                     break;
                 case 'q':
@@ -358,7 +360,6 @@ void findAndPrintPatch(Vector givenPoints[]) {
             }
         }
     }
-//    return patchPoints;
 }
 
 void printPatchOnSameSide(ThreeDIntersection patchPoint1, ThreeDIntersection patchPoint2, ThreeDIntersection patchPoint3) {
@@ -488,7 +489,6 @@ struct hemiDelta {
 };
 
 void generateHemicubeCellCenters(int n, Patch patch) {
-    
     patch.calcCenter();
     patch.getCenter().print();
     Vector *givenPoints = patch.getVertices();
@@ -522,9 +522,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
         switch (i) {
             case TOP_FACE:
             {
-                x = -1 + patch.getCenter().getX();
-                y = 1 + patch.getCenter().getY();
-                z = -1 + patch.getCenter().getZ();
+                x = -1;
+                y = 1;
+                z = -1;
                 cout << "TOP FACE\n";
                 for (int j = 0; j < n; j++) {
                     for (int k=0; k < n; k++) {
@@ -543,6 +543,10 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                             } else {
                                 cout << setw(10) << "\tT : " << setprecision(2) << preT ;
                             }
+                            Vector pointOfIntersection;
+                            pointOfIntersection.setCoordinates(preT * top_buffer[j][k].getX(), preT * top_buffer[j][k].getY(), preT * top_buffer[j][k].getZ());
+                            cout << setw(15) << "\tOwnership:" << (pointInTriangle(pointOfIntersection, givenPoints[0], givenPoints[1], givenPoints[2]) == true ? "1" : "0");
+                            
                         } else {
                             cout << setw(10) << "\tT : doesn't intersect";
                         }
@@ -557,9 +561,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                 break;
             case FRONT_FACE:
             {
-                x = -1 + patch.getCenter().getX();
-                y = 1 + patch.getCenter().getY();
-                z = 1 + patch.getCenter().getZ();
+                x = -1;
+                y = 1;
+                z = 1;
                 cout << "\nFRONT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -578,6 +582,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                             } else {
                                 cout << setw(10) << "\tT : " << setprecision(2) << preT ;
                             }
+                            Vector pointOfIntersection;
+                            pointOfIntersection.setCoordinates(preT * front_buffer[j][k].getX(), preT * front_buffer[j][k].getY(), preT * front_buffer[j][k].getZ());
+                            cout << setw(15) << "\tOwnership:" << (pointInTriangle(pointOfIntersection, givenPoints[0], givenPoints[1], givenPoints[2]) == true ? "1" : "0");
                         } else {
                             cout << setw(10) << "\tT : doesn't intersect";
                         }
@@ -590,9 +597,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
             }
                 break;
             case BACK_FACE:
-                x = -1 + patch.getCenter().getX();
-                y = 1 + patch.getCenter().getY();
-                z = -1 + patch.getCenter().getZ();
+                x = -1;
+                y = 1;
+                z = -1;
                 cout << "\nBACK FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -611,6 +618,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                             } else {
                                 cout << setw(10) << "\tT : " << setprecision(2) << preT ;
                             }
+                            Vector pointOfIntersection;
+                            pointOfIntersection.setCoordinates(preT * back_buffer[j][k].getX(), preT * back_buffer[j][k].getY(), preT * back_buffer[j][k].getZ());
+                            cout << setw(15) << "\tOwnership:" << (pointInTriangle(pointOfIntersection, givenPoints[0], givenPoints[1], givenPoints[2]) == true ? "1" : "0");
                         } else {
                             cout << setw(10) << "\tT : doesn't intersect";
                         }
@@ -622,9 +632,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                 }
                 break;
             case LEFT_FACE:
-                x = -1 + patch.getCenter().getX();
-                y = 1 + patch.getCenter().getY();
-                z = 1 + patch.getCenter().getZ();
+                x = -1;
+                y = 1;
+                z = 1;
                 cout << "\nLEFT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -643,6 +653,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                             } else {
                                 cout << setw(10) << "\tT : " << setprecision(2) << preT ;
                             }
+                            Vector pointOfIntersection;
+                            pointOfIntersection.setCoordinates(preT * left_buffer[j][k].getX(), preT * left_buffer[j][k].getY(), preT * left_buffer[j][k].getZ());
+                            cout << setw(15) << "\tOwnership:" << (pointInTriangle(pointOfIntersection, givenPoints[0], givenPoints[1], givenPoints[2]) == true ? "1" : "0");
                         } else {
                             cout << setw(10) << "\tT : doesn't intersect";
                         }
@@ -654,9 +667,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                 }
                 break;
             case RIGHT_FACE:
-                x = 1 + patch.getCenter().getX();
-                y = 1 + patch.getCenter().getY();
-                z = 1 + patch.getCenter().getZ();
+                x = 1;
+                y = 1;
+                z = 1;
                 cout << "\nRIGHT FACE\n";
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
@@ -675,6 +688,9 @@ void generateHemicubeCellCenters(int n, Patch patch) {
                             } else {
                                 cout << setw(10) << "\tT : " << setprecision(2) << preT ;
                             }
+                            Vector pointOfIntersection;
+                            pointOfIntersection.setCoordinates(preT * right_buffer[j][k].getX(), preT * right_buffer[j][k].getY(), preT * right_buffer[j][k].getZ());
+                            cout << setw(15) << "\tOwnership:" << (pointInTriangle(pointOfIntersection, givenPoints[0], givenPoints[1], givenPoints[2]) == true ? "1" : "0");
                         } else {
                             cout << setw(10) << "\tT : doesn't intersect";
                         }
