@@ -801,23 +801,30 @@ void findClosestObject(int length, float t[], Vector centers[], Vector givenPoin
     cout << pointInTriangle(testPoint, givenPoints[0], givenPoints[1], givenPoints[2]);
 }
 
-bool onSameSide(Vector p, Vector a, Vector b, Vector c) {
-    Vector cb = c - b;
-    Vector pb = p - b;
-    Vector pa = p - a;
-    Vector cp1 = cb.cross(pb);
-    Vector cp2 = cb.cross(pa);
-    if (cp1.dot(cp2) >= 0)
-        return true;
-    else
-        return false;
-}
 
-bool pointInTriangle(Vector p, Vector a, Vector b, Vector c) {
-    if (onSameSide(p, a, b, c) &&
-        onSameSide(p, b, a, c) &&
-        onSameSide(p, c, a, b))
+bool pointInTriangle(Vector ph, Vector v1, Vector v2, Vector v3) {
+
+    Vector v21 = v2 - v1;
+    Vector vh1 = ph - v1;
+    Vector cross1 = v21.cross(vh1);
+    
+    Vector v32 = v3 - v2;
+    Vector vh2 = ph - v2;
+    Vector cross2 = v32.cross(vh2);
+    
+    Vector v13 = v1 - v3;
+    Vector vh3 = ph - v3;
+    Vector cross3 = v13.cross(vh3);
+    
+    if (cross1.dot(cross2) >= 0 &&
+        cross1.dot(cross3) >= 0 &&
+        cross2.dot(cross3) >= 0) {
         return true;
-    else
-        return false;
+    }
+//    if ((cross1.getX() >= 0 && cross2.getX() >= 0 && cross3.getX() >= 0 ) ||
+//        (cross1.getX() < 0 && cross2.getX() < 0 && cross3.getX() < 0)) {
+//        return true;
+//    }
+    
+    return false;
 }
