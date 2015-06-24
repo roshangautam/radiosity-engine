@@ -13,7 +13,10 @@
 
 class Patch {
     Vector vertices[3];
+    Vector vectors[3];
     Vector center;
+    float tmin;
+    Patch *closestPatch;
 public:
     void setVertices(Vector vertex1, Vector vertex2, Vector vertex3) {
         vertices[0] = vertex1;
@@ -24,9 +27,29 @@ public:
     Vector* getVertices() {
         return vertices;
     }
+
+    Vector* getVectors() {
+        return vectors;
+    }
     
     Vector getCenter() {
         return center;
+    }
+    
+    void setTMin(float t) {
+        tmin = t;
+    }
+    
+    void setClosestPatch(Patch *patch) {
+        closestPatch = patch;
+    }
+    
+    float getTMin() {
+        return tmin;
+    }
+    
+    Patch* getClosestPatch() {
+        return closestPatch;
     }
     
     void calcCenter()       // Calculate patch centroid
@@ -49,6 +72,13 @@ public:
         center.setX(cv.getX());
         center.setY(cv.getY());
         center.setZ(cv.getZ());
+    }
+    
+    void calcVectors() {
+        vectors[0] = (vertices[1] - vertices[0]);
+        vectors[0].normalizeVector();
+        vectors[1] = (vertices[1] - vertices[0]).cross((vertices[2] - vertices[1]));
+        vectors[2] = vectors[0].cross(vectors[1]);
     }
     
     void printPatch() {

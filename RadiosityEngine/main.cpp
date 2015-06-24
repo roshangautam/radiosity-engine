@@ -34,6 +34,9 @@ Vector calculateNormal(Vector[]);
 bool onSameSide(Vector, Vector, Vector, Vector);
 bool pointInTriangle(Vector, Vector, Vector, Vector);
 void findClosestObject(int, float[], Vector[], Vector[]);
+void calculateEnergyArray(int, int, Patch []);
+Patch tranformPatch(Patch, Patch);
+Vector* getHemicubeCellCenters(int n);
 
 int main(int argc, const char * argv[]) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
@@ -173,45 +176,43 @@ void loop() {
                     break;
                 case '7':
                 {
-                    cout << "Enter Coordinates for first vertex:\n";
-                    if(!vertex.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
-                    cout << "Enter Coordinates for second vertex:\n";
-                    if(!vertex1.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
-                    cout << "Enter Coordinates for third vertex\n";
-                    if(!vertex2.read()) {
-                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-                        break;
-                    }
-                    Patch patch;
-                    patch.setVertices(vertex, vertex1, vertex2);
+//                    cout << "Enter Coordinates for first vertex:\n";
+//                    if(!vertex.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
+//                    cout << "Enter Coordinates for second vertex:\n";
+//                    if(!vertex1.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
+//                    cout << "Enter Coordinates for third vertex\n";
+//                    if(!vertex2.read()) {
+//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
+//                        break;
+//                    }
+//                    Patch patch;
+//                    patch.setVertices(vertex, vertex1, vertex2);
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-//                    ifstream objectFile("room.obj");
-//                    if (objectFile.is_open()) {
-//                        std::istream_iterator<double> start(objectFile), end;
-//                        std::vector<double> lines(start, end);
-//
-//                        Vector *vertices = new Vector[lines.size()];
-//                        Patch *patches = new Patch[lines.size()/9];
-//                        for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
-//                            vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
-//                        }
-//                        int polyCount;
-//                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
-//                            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
-//                            polyCount++;
-//                        }
-//                        patches[3].printPatch();
-//                        generateHemicubeCellCenters(n, patch);
-//                    }
-                    generateHemicubeCellCenters(n, patch);
+                    ifstream objectFile("room.obj");
+                    if (objectFile.is_open()) {
+                        std::istream_iterator<double> start(objectFile), end;
+                        std::vector<double> lines(start, end);
+
+                        Vector *vertices = new Vector[lines.size()];
+                        Patch *patches = new Patch[lines.size()/9];
+                        for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
+                            vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
+                        }
+                        int polyCount;
+                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
+                            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
+                            polyCount++;
+                        }
+                        calculateEnergyArray(n, polyCount, patches);
+                    }
                 }
                     break;
                 case 'q':
@@ -225,6 +226,7 @@ void loop() {
         }
     }
 }
+
 
 void findAndPrintPatch(Vector givenPoints[]) {
     ThreeDIntersection patchPoint1, patchPoint2, patchPoint3;
@@ -487,6 +489,171 @@ struct hemiDelta {
     float t;
     Vector center;
 };
+
+Patch tranformPatch(Patch current, Patch subject) {
+    current.calcCenter();
+    current.calcVectors();
+    Vector *vectors = current.getVectors();
+    Vector *vertices = subject.getVertices();
+    Patch transformed;
+    Vector transformedVertices[3];
+    for (int i =0; i<3; i++) {
+        Vector vertex = vertices[i] - current.getCenter();
+        float x = vectors[0].dot(vertex);
+        float y = vectors[1].dot(vertex);
+        float z = vectors[2].dot(vertex);
+        transformedVertices[i].setCoordinates(x, y, z);
+    }
+    transformed.setVertices(transformedVertices[0], transformedVertices[1], transformedVertices[2]);
+    return transformed;
+}
+
+void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches) {
+    int length = hemicubeResolution * (hemicubeResolution/2) * 6;
+    float t[polyCount][length]; //energy array
+    Vector *cellCenters = getHemicubeCellCenters(hemicubeResolution);
+    float thmin;
+    Patch closestPatch;
+    for (int j = 0; j < polyCount; j++) {
+        for (int i = 0; i < length; i++) {
+            thmin = 9999999;
+            for (int k = j+1; k < polyCount-1; j++) {
+                Patch transformed = tranformPatch(patches[j],patches[k]);
+                Vector normal = calculateNormal(transformed.getVertices());
+                float d = normal.dot(transformed.getVertices()[0]);
+                float dot = normal.dot(cellCenters[i]);
+                if (dot != 0) {
+                    float t = d / dot;
+                    if (t > 0 &&
+                        t < thmin) {
+                        Vector ph;
+                        ph.setCoordinates(t * cellCenters[i].getX(), t * cellCenters[i].getY(), t * cellCenters[i].getZ());
+                        if (pointInTriangle(ph, transformed.getVertices()[0], transformed.getVertices()[1], transformed.getVertices()[2])) {
+                            thmin = t;
+                            closestPatch = patches[k];
+                        }
+                    }
+                }
+            }
+            t[j][i] = thmin;
+            patches[j].setTMin(thmin);
+            patches[j].setClosestPatch(&closestPatch);
+        }
+    }
+}
+
+Vector* getHemicubeCellCenters(int n) {
+    Vector** top_buffer = new Vector*[n];
+    Vector** front_buffer = new Vector*[n];
+    Vector** back_buffer = new Vector*[n];
+    Vector** left_buffer = new Vector*[n];
+    Vector** right_buffer = new Vector*[n];
+    
+    for(int i = 0; i < n; ++i) {
+        top_buffer[i] = new Vector[n];
+        front_buffer[i] = new Vector[n];
+        back_buffer[i] = new Vector[n];
+        left_buffer[i] = new Vector[n];
+        right_buffer[i] = new Vector[n];
+    }
+    
+    int length = n * (n/2) * 6;
+    
+    Vector *centers = new Vector[length];
+    int counter = 0;
+    
+    float delta;
+    delta = 2 / (float)n;
+    float x, y, z;
+    for ( int i = 0 ; i < 5 ; i++) { // for five faces of hemicube
+        switch (i) {
+            case TOP_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = -1;
+                for (int j = 0; j < n; j++) {
+                    for (int k=0; k < n; k++) {
+                        top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
+                        centers[counter] = top_buffer[j][k];
+                        counter++;
+                        x += delta;
+                        
+                    }
+                    x = -1;
+                    z += delta;
+                }
+            }
+                break;
+            case FRONT_FACE:
+            {
+                x = -1;
+                y = 1;
+                z = 1;
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        front_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        centers[counter] = front_buffer[j][k];
+                        counter++;
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+            }
+                break;
+            case BACK_FACE:
+                x = -1;
+                y = 1;
+                z = -1;
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        back_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
+                        centers[counter] = back_buffer[j][k];
+                        counter++;
+                        x += delta;
+                    }
+                    x = -1;
+                    y -= delta;
+                }
+                break;
+            case LEFT_FACE:
+                x = -1;
+                y = 1;
+                z = 1;
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        left_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        centers[counter] = left_buffer[j][k];
+                        counter++;
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            case RIGHT_FACE:
+                x = 1;
+                y = 1;
+                z = 1;
+                for (int j = 0; j < n/2; j++) {
+                    for (int k= 0; k < n; k++) {
+                        right_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
+                        right_buffer[j][k].print();
+                        centers[counter] = right_buffer[j][k];
+                        counter++;
+                        z -= delta;
+                    }
+                    z = 1;
+                    y -= delta;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return centers;
+}
 
 void generateHemicubeCellCenters(int n, Patch patch) {
     patch.calcCenter();
@@ -821,10 +988,6 @@ bool pointInTriangle(Vector ph, Vector v1, Vector v2, Vector v3) {
         cross2.dot(cross3) >= 0) {
         return true;
     }
-//    if ((cross1.getX() >= 0 && cross2.getX() >= 0 && cross3.getX() >= 0 ) ||
-//        (cross1.getX() < 0 && cross2.getX() < 0 && cross3.getX() < 0)) {
-//        return true;
-//    }
     
     return false;
 }
