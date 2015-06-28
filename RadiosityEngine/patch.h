@@ -84,6 +84,7 @@ public:
     void printPatch() {
         for (int i =0 ; i < 3; i++) {
             vertices[i].print();
+            cout << " ––– ";
         }
     }
 };

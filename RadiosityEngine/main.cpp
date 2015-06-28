@@ -16,12 +16,13 @@
 #include "intersection.h"
 #include "3dintersection.h"
 #include "patch.h"
+#include "render.h"
 
 using namespace std;
 
 int POLY_COUNT = 10000;
 
-void loop();
+void loop(int *, char **);
 void findAndPrintPatch(Vector[]);
 void printPatchOnSameSide(ThreeDIntersection, ThreeDIntersection, ThreeDIntersection);
 int findPointToBeProjected(ThreeDIntersection[]);
@@ -37,19 +38,21 @@ void findClosestObject(int, float[], Vector[], Vector[]);
 void calculateEnergyArray(int, int, Patch []);
 Patch tranformPatch(Patch, Patch);
 Vector* getHemicubeCellCenters(int n);
+Patch* tranformPatchesToCameraCoordinates(int, Patch[], Vector, Vector);
+Patch transformToCamera(Vector VRP, Vector u, Vector v, Vector n, Patch subject);
 
-int main(int argc, const char * argv[]) {
+int main(int argc,char **argv) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     cout << "Assumptions for 2D:\n";
     cout << "1. Light Source Origin is always (0,0)\n";
     cout << "2. Height of hemi-square = 1 i.e y = 1 \n";
     cout << "3. Left End of hemi-square from origin = -1 i.e x = -1 \n";
     cout << "4. Right End of hemi-square from origin = 1 i.e x = 1 \n";
-    loop();
+    loop(&argc, argv);
     return 0;
 }
 
-void loop() {
+void loop(int *argcp, char **argv) {
     Point point, secondPoint;
     Intersection intersection, secondIntersection;
     Vector vertex, vertex1, vertex2;
@@ -66,6 +69,7 @@ void loop() {
         cout << "(5)Generate Hemicube cell centers\n";
         cout << "(6)Generate environment patch vertices\n";
         cout << "(7)Calculate all t value from hemicube cells to a given set of triangle vertices\n";
+        cout << "(8)Render\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -196,6 +200,16 @@ void loop() {
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
+                    Vector vrp;
+                    Vector nvec(0,0,1);
+                    float e;
+                    cout << "Enter VRP (Position of the camera):";
+                    vrp.read();
+//                    cout << "Enter n vector for VRP";
+//                    nvec.read();
+
+                    cout << "Enter the value of E:";
+                    cin >> e; //0.25
                     ifstream objectFile("room.obj");
                     if (objectFile.is_open()) {
                         std::istream_iterator<double> start(objectFile), end;
@@ -211,10 +225,13 @@ void loop() {
                             patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
                             polyCount++;
                         }
+                        tranformPatchesToCameraCoordinates(polyCount, patches, vrp, nvec);
                         calculateEnergyArray(n, polyCount, patches);
                     }
                 }
                     break;
+                case '8':
+                    render(argcp,argv);
                 case 'q':
                 case 'Q':
                     cout << "\n--- End of Program ---\n";
@@ -490,6 +507,22 @@ struct hemiDelta {
     Vector center;
 };
 
+Patch transformToCamera(Vector VRP, Vector u, Vector v, Vector n, Patch subject) {
+    Patch transformed;
+    Vector *vertices = subject.getVertices();
+    Vector transformedVertices[3];
+    for (int i = 0 ; i < 3 ; i++) {
+        Vector vertex = vertices[i] - VRP;
+        float x = u.dot(vertex);
+        float y = v.dot(vertex);
+        float z = n.dot(vertex);
+        transformedVertices[i].setCoordinates(x, y, z);
+    }
+    transformed.setVertices(transformedVertices[0], transformedVertices[1], transformedVertices[2]);
+    return transformed;
+}
+
+
 Patch tranformPatch(Patch current, Patch subject) {
     current.calcCenter();
     current.calcVectors();
@@ -508,6 +541,16 @@ Patch tranformPatch(Patch current, Patch subject) {
     return transformed;
 }
 
+Patch* tranformPatchesToCameraCoordinates(int polyCount,Patch *patches, Vector VRP, Vector n) {
+    Patch *transformedPatches = new Patch[polyCount];
+    Vector u,v(0,1,0);
+    u = v.cross(n);
+    for (int i = 0; i < polyCount; i++) {
+        transformedPatches[i] = transformToCamera(VRP, u, v, n, patches[i]);
+    }
+    return transformedPatches;
+}
+
 void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches) {
     int length = hemicubeResolution * (hemicubeResolution/2) * 6;
     float t[polyCount][length]; //energy array
@@ -515,9 +558,11 @@ void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches)
     float thmin;
     Patch closestPatch;
     for (int j = 0; j < polyCount; j++) {
+//        patches[j].printPatch();
+
         for (int i = 0; i < length; i++) {
             thmin = 9999999;
-            for (int k = j+1; k < polyCount-1; j++) {
+            for (int k = j+1; k < polyCount-1; k++) {
                 Patch transformed = tranformPatch(patches[j],patches[k]);
                 Vector normal = calculateNormal(transformed.getVertices());
                 float d = normal.dot(transformed.getVertices()[0]);
@@ -536,8 +581,14 @@ void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches)
                 }
             }
             t[j][i] = thmin;
-            patches[j].setTMin(thmin);
-            patches[j].setClosestPatch(&closestPatch);
+            patches[j].printPatch();
+            cout << " Cell no: " << i;
+            cout << " Tmin: " << thmin;
+            cout << " Closest Patch:";
+            closestPatch.printPatch();
+            cout << "\n";
+//            patches[j].setTMin(thmin);
+//            patches[j].setClosestPatch(&closestPatch);
         }
     }
 }
@@ -941,10 +992,10 @@ void generatePolygons(double width, double height, double length, string filenam
 Vector calculateNormal(Vector givenPoints[]) {
     Vector a = givenPoints[1] - givenPoints[0];
     Vector b = givenPoints[2] - givenPoints[1];
-    cout << "Vector (v2 - v1) : "; a.print(); cout << "\n";
-    cout << "Vector (v3 - v2) : "; b.print(); cout << "\n";
+//    cout << "Vector (v2 - v1) : "; a.print(); cout << "\n";
+//    cout << "Vector (v3 - v2) : "; b.print(); cout << "\n";
     Vector normal = a.cross(b);
-    cout << "Normal of the plane ( a X b) : "; normal.print(); cout << "\n";
+//    cout << "Normal of the plane ( a X b) : "; normal.print(); cout << "\n";
     return normal;
 }
 

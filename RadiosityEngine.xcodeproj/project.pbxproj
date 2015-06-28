@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E9E48DB01B40610900BCEEDB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9E48DAF1B40610900BCEEDB /* OpenGL.framework */; };
+		E9E48DB21B40610D00BCEEDB /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9E48DB11B40610D00BCEEDB /* GLUT.framework */; };
 		E9EECE5C1B1FA8FE00C07F08 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EECE5A1B1FA8FE00C07F08 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +27,9 @@
 /* Begin PBXFileReference section */
 		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9DCE12A1B332226008CE362 /* patch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = patch.h; path = RadiosityEngine/patch.h; sourceTree = SOURCE_ROOT; };
+		E9E48DAF1B40610900BCEEDB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		E9E48DB11B40610D00BCEEDB /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		E9E48DB31B40615B00BCEEDB /* render.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = render.h; path = RadiosityEngine/render.h; sourceTree = SOURCE_ROOT; };
 		E9EECE591B1FA8FE00C07F08 /* intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = intersection.h; path = RadiosityEngine/intersection.h; sourceTree = SOURCE_ROOT; };
 		E9EECE5A1B1FA8FE00C07F08 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = RadiosityEngine/main.cpp; sourceTree = SOURCE_ROOT; };
 		E9EECE5B1B1FA8FE00C07F08 /* point.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = point.h; path = RadiosityEngine/point.h; sourceTree = SOURCE_ROOT; };
@@ -37,6 +42,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9E48DB21B40610D00BCEEDB /* GLUT.framework in Frameworks */,
+				E9E48DB01B40610900BCEEDB /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +53,8 @@
 		E99B283E1B1D1595009647A0 = {
 			isa = PBXGroup;
 			children = (
+				E9E48DB11B40610D00BCEEDB /* GLUT.framework */,
+				E9E48DAF1B40610900BCEEDB /* OpenGL.framework */,
 				E99B28491B1D1595009647A0 /* RadiosityEngine */,
 				E99B28481B1D1595009647A0 /* Products */,
 			);
@@ -65,6 +74,7 @@
 				E9EECE5E1B23A05B00C07F08 /* 2D */,
 				E9EECE5D1B23A05200C07F08 /* 3D */,
 				E9EECE5A1B1FA8FE00C07F08 /* main.cpp */,
+				E9E48DB31B40615B00BCEEDB /* render.h */,
 			);
 			name = RadiosityEngine;
 			path = LineIntersection;
@@ -232,6 +242,7 @@
 		E99B284F1B1D1595009647A0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				PRODUCT_NAME = RadiosityEngine;
 			};
 			name = Debug;
@@ -239,6 +250,7 @@
 		E99B28501B1D1595009647A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				PRODUCT_NAME = RadiosityEngine;
 			};
 			name = Release;
