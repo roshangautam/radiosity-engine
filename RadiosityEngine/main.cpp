@@ -37,7 +37,7 @@ bool pointInTriangle(Vector, Vector, Vector, Vector);
 void findClosestObject(int, float[], Vector[], Vector[]);
 void calculateEnergyArray(int, int, Patch []);
 Patch tranformPatch(Patch, Patch);
-Vector* getHemicubeCellCenters(int n);
+Vector* getHemicubeCellCenters(int n, bool print);
 Patch* tranformPatchesToCameraCoordinates(int, Patch[], Vector, Vector);
 Patch transformToCamera(Vector VRP, Vector u, Vector v, Vector n, Patch subject);
 
@@ -157,7 +157,8 @@ void loop(int *argcp, char **argv) {
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
                     Patch patch;
-                    generateHemicubeCellCenters(n, patch);
+                    getHemicubeCellCenters(n, true);
+//                    generateHemicubeCellCenters(n, patch);
                 }
                     break;
                 case '6':
@@ -180,36 +181,12 @@ void loop(int *argcp, char **argv) {
                     break;
                 case '7':
                 {
-//                    cout << "Enter Coordinates for first vertex:\n";
-//                    if(!vertex.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-//                    cout << "Enter Coordinates for second vertex:\n";
-//                    if(!vertex1.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-//                    cout << "Enter Coordinates for third vertex\n";
-//                    if(!vertex2.read()) {
-//                        cout << "\nERROR:Coordinates can't be 0. Try again with a different set of coordinates.\n";
-//                        break;
-//                    }
-//                    Patch patch;
-//                    patch.setVertices(vertex, vertex1, vertex2);
+
                     int n;
                     cout << "Enter the resolution for hemicube:";
                     cin >> n;
-                    Vector vrp;
-                    Vector nvec(0,0,1);
-                    float e;
-                    cout << "Enter VRP (Position of the camera):";
-                    vrp.read();
-//                    cout << "Enter n vector for VRP";
-//                    nvec.read();
 
-                    cout << "Enter the value of E:";
-                    cin >> e; //0.25
+
                     ifstream objectFile("room.obj");
                     if (objectFile.is_open()) {
                         std::istream_iterator<double> start(objectFile), end;
@@ -220,18 +197,19 @@ void loop(int *argcp, char **argv) {
                         for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
                             vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
                         }
-                        int polyCount;
-                        for (int i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
+                        int polyCount = 0;
+                        int i = 0, j = 0;
+                        for (i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
                             patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
                             polyCount++;
                         }
-                        tranformPatchesToCameraCoordinates(polyCount, patches, vrp, nvec);
-                        calculateEnergyArray(n, polyCount, patches);
+                        noOfPolygons = polyCount;
+                        transformedPatches = patches; //tranformPatchesToCameraCoordinates(polyCount, patches, Vector (0.0, 0.0, 3.0), nvec);
+                        render(argcp, argv);
+//                        calculateEnergyArray(n, polyCount, patches);
                     }
                 }
                     break;
-                case '8':
-                    render(argcp,argv);
                 case 'q':
                 case 'Q':
                     cout << "\n--- End of Program ---\n";
@@ -502,15 +480,11 @@ Vector findCommonVertex(Face faces[]) {
     return Vector(0,0,0);
 }
 
-struct hemiDelta {
-    float t;
-    Vector center;
-};
-
 Patch transformToCamera(Vector VRP, Vector u, Vector v, Vector n, Patch subject) {
     Patch transformed;
     Vector *vertices = subject.getVertices();
     Vector transformedVertices[3];
+    VRP /= 15;
     for (int i = 0 ; i < 3 ; i++) {
         Vector vertex = vertices[i] - VRP;
         float x = u.dot(vertex);
@@ -554,7 +528,7 @@ Patch* tranformPatchesToCameraCoordinates(int polyCount,Patch *patches, Vector V
 void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches) {
     int length = hemicubeResolution * (hemicubeResolution/2) * 6;
     float t[polyCount][length]; //energy array
-    Vector *cellCenters = getHemicubeCellCenters(hemicubeResolution);
+    Vector *cellCenters = getHemicubeCellCenters(hemicubeResolution, false);
     float thmin;
     Patch closestPatch;
     for (int j = 0; j < polyCount; j++) {
@@ -593,7 +567,7 @@ void calculateEnergyArray(int hemicubeResolution, int polyCount, Patch *patches)
     }
 }
 
-Vector* getHemicubeCellCenters(int n) {
+Vector* getHemicubeCellCenters(int n, bool print) {
     Vector** top_buffer = new Vector*[n];
     Vector** front_buffer = new Vector*[n];
     Vector** back_buffer = new Vector*[n];
@@ -611,8 +585,10 @@ Vector* getHemicubeCellCenters(int n) {
     int length = n * (n/2) * 6;
     
     Vector *centers = new Vector[length];
+    float formFactors[length];
+    float checkSum = 0.0;
     int counter = 0;
-    
+    int startCounter = 0;
     float delta;
     delta = 2 / (float)n;
     float x, y, z;
@@ -623,16 +599,27 @@ Vector* getHemicubeCellCenters(int n) {
                 x = -1;
                 y = 1;
                 z = -1;
+                startCounter = counter;
                 for (int j = 0; j < n; j++) {
                     for (int k=0; k < n; k++) {
                         top_buffer[j][k] = *new Vector(((x+delta) + x) / 2, y, ((z+delta) + z)/2);
                         centers[counter] = top_buffer[j][k];
+                        formFactors[counter] = (delta * delta) / ( PI * centers[counter].getWholeSquare() );
                         counter++;
                         x += delta;
-                        
                     }
                     x = -1;
                     z += delta;
+                }
+                if (print) {
+                    cout << "\nTOP FACE\n";
+                    for (int l = startCounter; l < counter; l++) {
+                        if (l > 0 && l % 8 == 0) {
+                            cout << "\n\n";
+                        }
+                        cout << setw(10) << setprecision(3) << formFactors[l];
+                        checkSum += formFactors[l];
+                    }
                 }
             }
                 break;
@@ -641,15 +628,28 @@ Vector* getHemicubeCellCenters(int n) {
                 x = -1;
                 y = 1;
                 z = 1;
+                startCounter = counter;
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
                         front_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
                         centers[counter] = front_buffer[j][k];
+                        formFactors[counter] = ( centers[counter].getX() * delta * delta ) / (PI * centers[counter].getWholeSquare());
                         counter++;
                         x += delta;
                     }
                     x = -1;
                     y -= delta;
+                }
+                if (print) {
+                    cout << "\nFront FACE\n";
+                    for (int l = startCounter; l < counter; l++) {
+                        if (l > 0 && l % 8 == 0) {
+                            cout << "\n\n";
+                        }
+                        cout << setw(10) << setprecision(3) << formFactors[l];
+                        checkSum += formFactors[l];
+                    }
+                    cout << "\n" << checkSum << "\n";
                 }
             }
                 break;
@@ -657,46 +657,84 @@ Vector* getHemicubeCellCenters(int n) {
                 x = -1;
                 y = 1;
                 z = -1;
+                startCounter = counter;
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
                         back_buffer[j][k] = *new Vector(((x+delta) + x) / 2, ((y-delta) + y) / 2, z);
                         centers[counter] = back_buffer[j][k];
+                        formFactors[counter] = ( centers[counter].getX() * delta * delta ) / (PI * centers[counter].getWholeSquare());
                         counter++;
                         x += delta;
                     }
                     x = -1;
                     y -= delta;
                 }
+                if (print) {
+                    cout << "\nBack FACE\n";
+                    for (int l = startCounter; l < counter; l++) {
+                        if (l > 0 && l % 8 == 0) {
+                            cout << "\n\n";
+                        }
+                        cout << setw(10) << setprecision(3) << formFactors[l];
+                        checkSum += formFactors[l];
+                    }
+                    cout << "\n" << checkSum << "\n";
+                }
                 break;
             case LEFT_FACE:
                 x = -1;
                 y = 1;
                 z = 1;
+                startCounter = counter;
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
                         left_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
                         centers[counter] = left_buffer[j][k];
+                        formFactors[counter] = ( centers[counter].getY() * delta * delta ) / (PI * centers[counter].getWholeSquare());
                         counter++;
                         z -= delta;
                     }
                     z = 1;
                     y -= delta;
                 }
+                if (print) {
+                    cout << "\nLeft FACE\n";
+                    for (int l = startCounter; l < counter; l++) {
+                        if (l > 0 && l % 8 == 0) {
+                            cout << "\n\n";
+                        }
+                        cout << setw(10) << setprecision(3) << formFactors[l];
+                        checkSum += formFactors[l];
+                    }
+                    cout << "\n" << checkSum << "\n";
+                }
                 break;
             case RIGHT_FACE:
                 x = 1;
                 y = 1;
                 z = 1;
+                startCounter = counter;
                 for (int j = 0; j < n/2; j++) {
                     for (int k= 0; k < n; k++) {
                         right_buffer[j][k] = *new Vector(x, ((y-delta) + y) / 2, ((z - delta) + z) / 2);
-                        right_buffer[j][k].print();
                         centers[counter] = right_buffer[j][k];
+                        formFactors[counter] = ( centers[counter].getY() * delta * delta ) / (PI * centers[counter].getWholeSquare());
                         counter++;
                         z -= delta;
                     }
                     z = 1;
                     y -= delta;
+                }
+                if (print) {
+                    cout << "\nRight FACE\n";
+                    for (int l = startCounter; l < counter; l++) {
+                        if (l > 0 && l % 8 == 0) {
+                            cout << "\n\n";
+                        }
+                        cout << setw(10) << setprecision(3) << formFactors[l];
+                        checkSum += formFactors[l];
+                    }
+                    cout << "\n" << checkSum << "\n";
                 }
                 break;
             default:
@@ -732,7 +770,7 @@ void generateHemicubeCellCenters(int n, Patch patch) {
     float t[length];
     Vector *centers = new Vector[length];
     int counter = 0;
-    
+
     float delta;
     delta = 2 / (float)n;
     float x, y, z;

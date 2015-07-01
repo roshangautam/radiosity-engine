@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E95C38471B42E68C00DA07E6 /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E95C38451B42E68C00DA07E6 /* camera.cpp */; };
 		E9E48DB01B40610900BCEEDB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9E48DAF1B40610900BCEEDB /* OpenGL.framework */; };
 		E9E48DB21B40610D00BCEEDB /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9E48DB11B40610D00BCEEDB /* GLUT.framework */; };
 		E9EECE5C1B1FA8FE00C07F08 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E9EECE5A1B1FA8FE00C07F08 /* main.cpp */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E95C38451B42E68C00DA07E6 /* camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = SOURCE_ROOT; };
+		E95C38461B42E68C00DA07E6 /* camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = camera.h; sourceTree = SOURCE_ROOT; };
 		E99B28471B1D1595009647A0 /* RadiosityEngine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RadiosityEngine; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9DCE12A1B332226008CE362 /* patch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = patch.h; path = RadiosityEngine/patch.h; sourceTree = SOURCE_ROOT; };
 		E9E48DAF1B40610900BCEEDB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -50,6 +53,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E95C38441B42E68300DA07E6 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				E95C38451B42E68C00DA07E6 /* camera.cpp */,
+				E95C38461B42E68C00DA07E6 /* camera.h */,
+			);
+			name = Camera;
+			sourceTree = "<group>";
+		};
 		E99B283E1B1D1595009647A0 = {
 			isa = PBXGroup;
 			children = (
@@ -71,6 +83,7 @@
 		E99B28491B1D1595009647A0 /* RadiosityEngine */ = {
 			isa = PBXGroup;
 			children = (
+				E95C38441B42E68300DA07E6 /* Camera */,
 				E9EECE5E1B23A05B00C07F08 /* 2D */,
 				E9EECE5D1B23A05200C07F08 /* 3D */,
 				E9EECE5A1B1FA8FE00C07F08 /* main.cpp */,
@@ -155,6 +168,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E95C38471B42E68C00DA07E6 /* camera.cpp in Sources */,
 				E9EECE5C1B1FA8FE00C07F08 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

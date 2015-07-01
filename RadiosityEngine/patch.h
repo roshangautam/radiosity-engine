@@ -15,6 +15,7 @@ class Patch {
     Vector vertices[3];
     Vector vectors[3];
     Vector center;
+    
     float tmin;
     Patch *closestPatch;
 public:

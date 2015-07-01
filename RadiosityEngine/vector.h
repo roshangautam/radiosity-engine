@@ -6,11 +6,15 @@
 //  Copyright (c) 2015 Roshan Gautam. All rights reserved.
 //
 
+#include <iomanip>
+#include <iostream>
+#include <math.h>
 
+using namespace std;
 #ifndef Radiosit_yEngine_vector_h
 #define Radiosit_yEngine_vector_h
 
-#include <iomanip>
+
 
 class Vector {
     float _x, _y, _z;
@@ -80,6 +84,11 @@ public:
     float getMagnitude()
     {
         return sqrtf(_x * _x + _y * _y + _z * _z);
+    }
+    
+    float getWholeSquare()
+    {
+        return powf(_x * _x + _y * _y + _z * _z, 2);
     }
     
     //multiply this vector by a scalar
