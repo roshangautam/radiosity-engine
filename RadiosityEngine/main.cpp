@@ -26,7 +26,6 @@ int cells =  n * ceilf((float)n/2) * 6;
 Vector *centers = new Vector[cells];
 GLfloat *delA = new GLfloat[cells];
 
-
 //Main Program Loop
 void loop(int *, char **);
 void loadObjectFile();
@@ -179,6 +178,11 @@ void determineCellOwnership() {
 }
 
 void generateHemicubeCellCenters(bool print) {
+    
+    cells =  n * ceilf((float)n/2) * 6;
+    centers = new Vector[cells];
+    delA = new GLfloat[cells];
+    
     Vector** top_buffer = new Vector*[n];
     Vector** front_buffer = new Vector*[n];
     Vector** back_buffer = new Vector*[n];
