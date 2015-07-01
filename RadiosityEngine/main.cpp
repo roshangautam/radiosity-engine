@@ -26,8 +26,6 @@ int cells =  n * ceilf((float)n/2) * 6;
 Vector *centers = new Vector[cells];
 GLfloat *delA = new GLfloat[cells];
 
-Patch *patches;
-int noOfPolygons;
 
 //Main Program Loop
 void loop(int *, char **);
@@ -57,18 +55,18 @@ void loadObjectFile() {
         std::vector<double> lines(start, end);
         
         Vector *vertices = new Vector[lines.size()];
-        Patch *patches = new Patch[lines.size()/9];
+        Patch *loadedPatches = new Patch[lines.size()/9];
         for (int i = 0, j = 0 ; j < lines.size()/3 ; i+=3,j++) {
             vertices[j].setCoordinates(lines.at(i), lines.at(i+1), lines.at(i+2));
         }
         int polyCount = 0;
         int i = 0, j = 0;
         for (i = 0, j = 0; j < lines.size()/9; i+=3, j++) {
-            patches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
+            loadedPatches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
             polyCount++;
         }
         noOfPolygons = polyCount;
-        patches = patches;
+        patches = loadedPatches;
     } else {
         cout << "\nMissing object file. Please generate triangles first";
     }

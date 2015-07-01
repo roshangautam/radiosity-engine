@@ -15,6 +15,9 @@
 
 CCamera Camera;
 
+Patch *patches;
+int noOfPolygons;
+
 #ifndef RadiosityEngine_render_h
 #define RadiosityEngine_render_h
 
