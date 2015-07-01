@@ -2,12 +2,6 @@
 #include "math.h"
 #include <iostream>
 
-
-#define SQR(x) (x*x)
-
-#define NULL_VECTOR Vector(0.0f,0.0f,0.0f)
-
-
 CCamera::CCamera()
 {
 	//Init with standard OGL values:

@@ -11,13 +11,40 @@
 
 #include "vector.h"
 
+class Patch;
+
+class HemiCell {
+    float tmin;
+    Patch *owner;
+public:
+    HemiCell() {
+        tmin = 0.0;
+        owner = NULL;
+    }
+    
+    void setTMin(float t) {
+        tmin = t;
+    }
+    
+    void setOwner(Patch *patch) {
+        owner = patch;
+    }
+    
+    float getTMin() {
+        return tmin;
+    }
+    
+    Patch *getOwner() {
+        return owner;
+    }
+};
+
 class Patch {
     Vector vertices[3];
     Vector vectors[3];
     Vector center;
-    
-    float tmin;
-    Patch *closestPatch;
+    HemiCell cellData[192];
+
 public:
     void setVertices(Vector vertex1, Vector vertex2, Vector vertex3) {
         vertices[0] = vertex1;
@@ -36,21 +63,14 @@ public:
     Vector getCenter() {
         return center;
     }
-    
-    void setTMin(float t) {
-        tmin = t;
+
+    void setCellData(int index, float tmin, Patch *owner) {
+        cellData[index].setTMin(tmin);
+        cellData[index].setOwner(owner);
     }
     
-    void setClosestPatch(Patch *patch) {
-        closestPatch = patch;
-    }
-    
-    float getTMin() {
-        return tmin;
-    }
-    
-    Patch* getClosestPatch() {
-        return closestPatch;
+    HemiCell getCellData(int index) {
+        return cellData[index];
     }
     
     void calcCenter()       // Calculate patch centroid

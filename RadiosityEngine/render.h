@@ -5,15 +5,11 @@
 //  Created by Roshan Gautam on 6/28/15.
 //  Copyright (c) 2015 Roshan Gautam. All rights reserved.
 //
-#ifdef __APPLE__
+
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-#else
-#include <GL/glut.h>
-#include <GL/glu.h>
-#include <GL/gl.h>
-#endif
+
 
 #include "camera.h"
 
@@ -22,12 +18,6 @@ CCamera Camera;
 #ifndef RadiosityEngine_render_h
 #define RadiosityEngine_render_h
 
-double rotate_y = 5;
-double rotate_x = 5;
-
-Vector vrp;
-Patch *transformedPatches;
-int noOfPolygons;
 
 
 void drawPatch(Patch patch) {
@@ -68,7 +58,7 @@ void Display(void)
     glPushMatrix();
     glBegin(GL_LINES);
     for (int i = 0 ; i < noOfPolygons; i++) {
-        drawPatch(transformedPatches[i]);
+        drawPatch(patches[i]);
     }
     glEnd();
     glPopMatrix();
