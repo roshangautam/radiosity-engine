@@ -226,7 +226,7 @@ void generateHemicubeCellCenters(bool print) {
                     cout << "\nTOP FACE\n";
                     for (int l = startCounter; l < counter; l++) {
                         if (l > startCounter && l % n == 0) {
-                            cout << "\n\n";
+                            cout << "\n\n\n\n\n\n";
                         }
                         cout << setw(10) << setprecision(3) << delA[l];
                         checkSum += delA[l];
@@ -251,7 +251,7 @@ void generateHemicubeCellCenters(bool print) {
                     y -= delta;
                 }
                 if (print) {
-                    cout << "\nLeft FACE\n";
+                    cout << "\n\nLeft FACE\n\n";
                     for (int l = startCounter; l < counter; l++) {
                         if (l > startCounter && l % n == 0) {
                             cout << "\n\n";
@@ -278,7 +278,7 @@ void generateHemicubeCellCenters(bool print) {
                     y -= delta;
                 }
                 if (print) {
-                    cout << "\nRight FACE\n";
+                    cout << "\n\nRight FACE\n\n";
                     for (int l = startCounter; l < counter; l++) {
                         if (l > startCounter && l % n == 0) {
                             cout << "\n\n";
@@ -306,7 +306,7 @@ void generateHemicubeCellCenters(bool print) {
                     y -= delta;
                 }
                 if (print) {
-                    cout << "\nFront FACE\n";
+                    cout << "\n\nFront FACE\n\n";
                     for (int l = startCounter; l < counter; l++) {
                         if (l > startCounter && l % n == 0) {
                             cout << "\n\n";
@@ -334,7 +334,7 @@ void generateHemicubeCellCenters(bool print) {
                     y -= delta;
                 }
                 if (print) {
-                    cout << "\nBack FACE\n";
+                    cout << "\n\nBack FACE\n\n";
                     for (int l = startCounter; l < counter; l++) {
                         if (l > startCounter && l % n == 0) {
                             cout << "\n\n";
