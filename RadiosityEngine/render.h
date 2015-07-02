@@ -16,7 +16,7 @@
 CCamera Camera;
 
 Patch *patches;
-int noOfPolygons;
+int polygons;
 
 #ifndef RadiosityEngine_render_h
 #define RadiosityEngine_render_h
@@ -60,7 +60,7 @@ void Display(void)
     
     glPushMatrix();
     glBegin(GL_LINES);
-    for (int i = 0 ; i < noOfPolygons; i++) {
+    for (int i = 0 ; i < polygons; i++) {
         drawPatch(patches[i]);
     }
     glEnd();

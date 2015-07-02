@@ -18,17 +18,21 @@
 
 using namespace std;
 
-enum Face {TOP_FACE, LEFT_FACE, RIGHT_FACE, FRONT_FACE, BACK_FACE, NA};
-
-int POLY_COUNT = 10000;
-int n = 8; //no of cells in hemicube - default is 8
-int cells =  n * ceilf((float)n/2) * 6;
-Vector *centers = new Vector[cells];
-GLfloat *delA = new GLfloat[cells];
+//number of faces on a hemicube
+enum Face {TOP_FACE, LEFT_FACE, RIGHT_FACE, FRONT_FACE, BACK_FACE};
+int POLY_COUNT = 10000; // we are shooting for these many patches in each object
+int n = 8; //resolution of hemicube - default is 8
+int cells =  n * ceilf((float)n/2) * 6; // no of cells in each hemicube
+Vector *centers = new Vector[cells]; // array of 3dpoints to hold center of each hemicube cell
+GLfloat *delA = new GLfloat[cells]; // array of floating point values to hold delA of each hemicube cell
+GLfloat **formFactors;
 
 //Main Program Loop
 void loop(int *, char **);
 void loadObjectFile();
+
+//function to generate triangles
+void generatePolygons(double, double, double, string);
 
 //Functions to calculate form factors
 void generateHemicubeCellCenters(bool print);
@@ -36,10 +40,12 @@ void determineCellOwnership();
 Vector calculateNormal(Vector[]);
 bool pointInTriangle(Vector, Vector, Vector, Vector);
 Patch transformPatch(Patch, Patch);
+void calculateFormFactors();
 
-//function to generate triangles
-void generatePolygons(double, double, double, string);
+//function to solve radiosity equation
+void progressiveRadiosity();
 
+//It all starts here - behold
 int main(int argc,char **argv) {
     cout << "Radiosity Engine - Solid Modeling CS6413 !!! \n";
     loadObjectFile();
@@ -47,6 +53,7 @@ int main(int argc,char **argv) {
     return 0;
 }
 
+//load vertices of patches from the generated object file
 void loadObjectFile() {
     ifstream objectFile("room.obj");
     if (objectFile.is_open()) {
@@ -64,13 +71,19 @@ void loadObjectFile() {
             loadedPatches[j].setVertices(vertices[i], vertices[i+1], vertices[i+2]);
             polyCount++;
         }
-        noOfPolygons = polyCount;
+        polygons = polyCount;
         patches = loadedPatches;
     } else {
         cout << "\nMissing object file. Please generate triangles first";
     }
+
+    formFactors = new GLfloat*[polygons];
+    for(int i = 0; i < polygons; ++i) {
+        formFactors[i] = new GLfloat[polygons];
+    }
 }
 
+//main program loop
 void loop(int *argcp, char **argv) {
     double length = 0.0, width = 0.0, height = 0.0; // dimensions of the room
     char c = '1';
@@ -80,7 +93,7 @@ void loop(int *argcp, char **argv) {
         cout << "(2)Generate triangles\n";
         cout << "(3)Draw Mesh\n";
         cout << "(4)Calculate form factors\n";
-        cout << "(5)Calculate Radiosity Equation";
+        cout << "(5)Calculate Radiosity Equation\n";
         cout << "(6)Render\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
@@ -116,7 +129,13 @@ void loop(int *argcp, char **argv) {
                     break;
                 case '4':
                     determineCellOwnership();
+                    calculateFormFactors();
                     break;
+                case '5':
+                    progressiveRadiosity();
+                    break;
+                case '6':
+                    render(argcp, argv);
                 case 'q':
                 case 'Q':
                     cout << "\n--- End of Program ---\n";
@@ -129,56 +148,8 @@ void loop(int *argcp, char **argv) {
     }
 }
 
-Patch transformPatch(Patch current, Patch subject) {
-    current.calcCenter();
-    current.calcVectors();
-    Vector *vectors = current.getVectors();
-    Vector *vertices = subject.getVertices();
-    Patch transformed;
-    Vector transformedVertices[3];
-    for (int i =0; i<3; i++) {
-        Vector vertex = vertices[i] - current.getCenter();
-        float x = vectors[0].dot(vertex);
-        float y = vectors[1].dot(vertex);
-        float z = vectors[2].dot(vertex);
-        transformedVertices[i].setCoordinates(x, y, z);
-    }
-    transformed.setVertices(transformedVertices[0], transformedVertices[1], transformedVertices[2]);
-    return transformed;
-}
-
-void determineCellOwnership() {
-    generateHemicubeCellCenters(false);
-    float thmin;
-    Patch closestPatch;
-    for (int j = 0; j < noOfPolygons; j++) {
-        for (int i = 0; i < cells; i++) {
-            thmin = 9999999;
-            for (int k = j+1; k < noOfPolygons - 1; k++) {
-                Patch transformed = transformPatch(patches[j],patches[k]);
-                Vector normal = calculateNormal(transformed.getVertices());
-                float d = normal.dot(transformed.getVertices()[0]);
-                float dot = normal.dot(centers[i]);
-                if (dot != 0) {
-                    float t = d / dot;
-                    if (t > 0 &&
-                        t < thmin) {
-                        Vector ph;
-                        ph.setCoordinates(t * centers[i].getX(), t * centers[i].getY(), t * centers[i].getZ());
-                        if (pointInTriangle(ph, transformed.getVertices()[0], transformed.getVertices()[1], transformed.getVertices()[2])) {
-                            thmin = t;
-                            closestPatch = patches[k];
-                        }
-                    }
-                }
-            }
-            patches[j].setCellData(i, thmin, &closestPatch);
-        }
-    }
-}
-
+//this function generates the cell centers for a hemicube of n resolution. The function also calculates delA for each cell as well which will be used to calculate formfactors later
 void generateHemicubeCellCenters(bool print) {
-    
     cells =  n * ceilf((float)n/2) * 6;
     centers = new Vector[cells];
     delA = new GLfloat[cells];
@@ -353,7 +324,7 @@ void generateHemicubeCellCenters(bool print) {
     }
 }
 
-
+//this function generates the triangles(patches) for the given object of length, width and height
 void generatePolygons(double width, double height, double length, string filename) {
     // WE ASSUME THE BOTTOM LEFT CORNER OF THE ROOM IS (0,0,0)
     ofstream objectFile;
@@ -417,6 +388,59 @@ void generatePolygons(double width, double height, double length, string filenam
     
 }
 
+//this function determines the ownership of each cell of a patch by another patch
+void determineCellOwnership() {
+    generateHemicubeCellCenters(false);
+    float thmin;
+    Patch closestPatch;
+    int patchIndex = 0;
+    for (int j = 0; j < polygons; j++) {
+        for (int i = 0; i < cells; i++) {
+            thmin = 9999999;
+            for (int k = j+1; k < polygons - 1; k++) {
+                Patch transformed = transformPatch(patches[j],patches[k]);
+                Vector normal = calculateNormal(transformed.getVertices());
+                float d = normal.dot(transformed.getVertices()[0]);
+                float dot = normal.dot(centers[i]);
+                if (dot != 0) {
+                    float t = d / dot;
+                    if (t > 0 &&
+                        t < thmin) {
+                        Vector ph;
+                        ph.setCoordinates(t * centers[i].getX(), t * centers[i].getY(), t * centers[i].getZ());
+                        if (pointInTriangle(ph, transformed.getVertices()[0], transformed.getVertices()[1], transformed.getVertices()[2])) {
+                            thmin = t;
+                            closestPatch = patches[k];
+                            patchIndex = k;
+                        }
+                    }
+                }
+            }
+            patches[j].setCellData(i, thmin, &closestPatch, patchIndex);
+        }
+    }
+}
+
+//transform the subject patch to the coordinates of current patch
+Patch transformPatch(Patch current, Patch subject) {
+    current.calcCenter();
+    current.calcVectors();
+    Vector *vectors = current.getVectors();
+    Vector *vertices = subject.getVertices();
+    Patch transformed;
+    Vector transformedVertices[3];
+    for (int i = 0; i < 3; i++) {
+        Vector vertex = vertices[i] - current.getCenter();
+        float x = vectors[0].dot(vertex);
+        float y = vectors[1].dot(vertex);
+        float z = vectors[2].dot(vertex);
+        transformedVertices[i].setCoordinates(x, y, z);
+    }
+    transformed.setVertices(transformedVertices[0], transformedVertices[1], transformedVertices[2]);
+    return transformed;
+}
+
+//calcualte the normal vector of three given points
 Vector calculateNormal(Vector givenPoints[]) {
     Vector a = givenPoints[1] - givenPoints[0];
     Vector b = givenPoints[2] - givenPoints[1];
@@ -424,7 +448,7 @@ Vector calculateNormal(Vector givenPoints[]) {
     return normal;
 }
 
-
+//following function determing if the point ph lies inside the traingle defined by v1, v2 and v3
 bool pointInTriangle(Vector ph, Vector v1, Vector v2, Vector v3) {
 
     Vector v21 = v2 - v1;
@@ -446,4 +470,39 @@ bool pointInTriangle(Vector ph, Vector v1, Vector v2, Vector v3) {
     }
     
     return false;
+}
+
+void calculateFormFactors() {
+    for (int i = 0; i < polygons; i++) {
+        for (int j = i + 1; j < polygons - 1; j++) {
+            float sum = 0.0;
+            for (int k = 0; k < cells; k++) {
+                if(patches[i].getCellData(k).getPatchIndex() == j) {
+                    sum += delA[k];
+                }
+            }
+            formFactors[i][j] = sum;
+            cout << formFactors[i][j] << "\n";
+        }
+    }
+
+}
+
+void progressiveRadiosity() {
+// The following is just pseudocode, still working on this part
+    
+//    B[i] = Unshot[i] = E[i]
+//    while (not converged) {
+//        Choose i with largest Unshot[i]*A[i]
+//        Shoot(i)
+//    }
+//    
+//    Shoot(i):
+//    for j = 1..n {
+//        Compute the form factor FF[i,j]
+//        Delta[j] = ρ[j] FF[i,j] Unshot[i] A[i]/A[j]
+//        B[j] += Delta[j]
+//        Unshot[j] += Delta[j]
+//    }
+//    Unshot[i] = 0
 }

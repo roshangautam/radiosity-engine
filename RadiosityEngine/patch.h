@@ -16,6 +16,7 @@ class Patch;
 class HemiCell {
     float tmin;
     Patch *owner;
+    int patchIndex;
 public:
     HemiCell() {
         tmin = 0.0;
@@ -30,12 +31,20 @@ public:
         owner = patch;
     }
     
+    void setPatchIndex(int index) {
+        patchIndex = index;
+    }
+    
     float getTMin() {
         return tmin;
     }
     
     Patch *getOwner() {
         return owner;
+    }
+    
+    int getPatchIndex() {
+        return patchIndex;
     }
 };
 
@@ -64,9 +73,10 @@ public:
         return center;
     }
 
-    void setCellData(int index, float tmin, Patch *owner) {
-        cellData[index].setTMin(tmin);
-        cellData[index].setOwner(owner);
+    void setCellData(int cellIndex, float tmin, Patch *owner, int patchIndex) {
+        cellData[cellIndex].setTMin(tmin);
+        cellData[cellIndex].setOwner(owner);
+        cellData[cellIndex].setPatchIndex(patchIndex);
     }
     
     HemiCell getCellData(int index) {
