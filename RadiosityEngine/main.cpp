@@ -448,7 +448,7 @@ Vector calculateNormal(Vector givenPoints[]) {
     return normal;
 }
 
-//following function determing if the point ph lies inside the traingle defined by v1, v2 and v3
+//following function determine if the point ph lies inside the traingle defined by v1, v2 and v3
 bool pointInTriangle(Vector ph, Vector v1, Vector v2, Vector v3) {
 
     Vector v21 = v2 - v1;
