@@ -4,11 +4,15 @@
 
 CCamera::CCamera()
 {
+    //    Position:(0.43,0.79,2.9)
+    //    Right Vector(-0.0093,-1,-0.031)
+    //    Up Vector(1,-0.0077,-0.051)
+    //    View direction(-0.05,0.031,-1)
 	//Init with standard OGL values:
 	Position = Vector (0.0, 0.0, 0.0);
-	ViewDir = Vector( 0.0, 0.0, -1.0);
-	RightVector = Vector (1.0, 0.0, 0.0);
-	UpVector = Vector (0.0, 1.0, 0.0);
+	ViewDir = Vector(-0.05,0.031,-1);
+	RightVector = Vector (-0.0093,-1,-0.031);
+	UpVector = Vector (1,-0.0077,-0.051);
 
 	//Only to be sure:
 	RotatedX = RotatedY = RotatedZ = 0.0;

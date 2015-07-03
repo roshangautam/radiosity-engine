@@ -21,7 +21,11 @@ public:
 	CCamera();				//inits the values (Position: (0|0|0) Target: (0|0|-1) )
 	void Render ( void );	//executes some glRotates and a glTranslate command
 							//Note: call glLoadIdentity before using Render
-
+    Vector getPosition() { return Position; };
+    Vector getRightVector() { return RightVector; };
+    Vector getUpVector() { return UpVector; };
+    Vector getViewDir() { return ViewDir; };
+    
 	void Move ( Vector Direction );
 	void RotateX ( GLfloat Angle );
 	void RotateY ( GLfloat Angle );

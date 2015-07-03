@@ -12,7 +12,7 @@
 #include <istream>
 #include <sstream>
 #include <vector>
-
+#include <time.h>
 #include "patch.h"
 #include "render.h"
 
@@ -26,6 +26,9 @@ int cells =  n * ceilf((float)n/2) * 6; // no of cells in each hemicube
 Vector *centers = new Vector[cells]; // array of 3dpoints to hold center of each hemicube cell
 GLfloat *delA = new GLfloat[cells]; // array of floating point values to hold delA of each hemicube cell
 GLfloat **formFactors;
+float startX = 0;
+float startY = 0;
+float startZ = 0;
 
 //Main Program Loop
 void loop(int *, char **);
@@ -78,9 +81,11 @@ void loadObjectFile() {
     }
 
     formFactors = new GLfloat*[polygons];
+    flux = new GLfloat[polygons];
     for(int i = 0; i < polygons; ++i) {
         formFactors[i] = new GLfloat[polygons];
     }
+
 }
 
 //main program loop
@@ -92,9 +97,7 @@ void loop(int *argcp, char **argv) {
         cout << "(1)Calculate Hemicube cell centers and DelA for each cell\n";
         cout << "(2)Generate triangles\n";
         cout << "(3)Draw Mesh\n";
-        cout << "(4)Calculate form factors\n";
-        cout << "(5)Calculate Radiosity Equation\n";
-        cout << "(6)Render\n";
+        cout << "(4)Calculate form factors, Solve Radiosity and Render\n";
         cout << "(Q)Quit\n";
         cout << "[Select]:";
         cin >> c;
@@ -130,12 +133,9 @@ void loop(int *argcp, char **argv) {
                 case '4':
                     determineCellOwnership();
                     calculateFormFactors();
-                    break;
-                case '5':
                     progressiveRadiosity();
-                    break;
-                case '6':
                     render(argcp, argv);
+                    break;
                 case 'q':
                 case 'Q':
                     cout << "\n--- End of Program ---\n";
@@ -335,9 +335,9 @@ void generatePolygons(double width, double height, double length, string filenam
         cout << "File Generated. Now generating polygons\n";
         // FRONT AND BACK
         int i = 1; //polycount
-        for (float z = 0; z <= length; z += length) {
-            for (float y = 0; y < height; y += DELTA) {
-                for (float x =0; x < width; x+= DELTA) {
+        for (float z = startZ; z <= length; z += length) {
+            for (float y = startY; y < height; y += DELTA) {
+                for (float x = startX; x < width; x+= DELTA) {
                     objectFile << x << " " << y << " " << z << "\n";
                     objectFile << x + DELTA << " " << y << " " << z << "\n";
                     objectFile << x << " " << y + DELTA << " " << z << "\n";
@@ -350,9 +350,9 @@ void generatePolygons(double width, double height, double length, string filenam
             }
         }
         // LEFT AND RIGHT
-        for (float x = 0; x <= width; x += width) {
-            for (float y = 0; y < height; y += DELTA) {
-                for (float z =0; z < length; z+= DELTA) {
+        for (float x = startX; x <= width; x += width) {
+            for (float y = startY; y < height; y += DELTA) {
+                for (float z = startZ; z < length; z+= DELTA) {
                     objectFile << x << " " << y << " " << z << "\n";
                     objectFile << x << " " << y + DELTA << " " << z << "\n";
                     objectFile << x << " " << y << " " << z + DELTA << "\n";
@@ -365,9 +365,9 @@ void generatePolygons(double width, double height, double length, string filenam
             }
         }
         // TOP AND BOTTTOM
-        for (float y = 0; y <= height; y += height) {
-            for (float x = 0; x < width; x += DELTA) {
-                for (float z =0; z < length; z+= DELTA) {
+        for (float y = startY; y <= height; y += height) {
+            for (float x = startX; x < width; x += DELTA) {
+                for (float z = startZ; z < length; z+= DELTA) {
                     objectFile << x << " " << y << " " << z << "\n";
                     objectFile << x << " " << y << " " << z + DELTA << "\n";
                     objectFile << x + DELTA  << " " << y << " " << z << "\n";
@@ -379,6 +379,117 @@ void generatePolygons(double width, double height, double length, string filenam
                 }
             }
         }
+        
+        startX = 0;
+        startY = height / 2.0;
+        startZ = length / 2.0 ;
+        int origLength = length;
+        int origHeight = height;
+        length = 2.0;
+        width = 2.0;
+        height = 2.0;
+        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
+        DELTA = floor(sqrt(factor) * 100) / 100;
+        // FRONT AND BACK
+        for (float z = startZ; z <= (startZ + length); z += length) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float x = startX; x < ( startX + width); x+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // LEFT AND RIGHT
+        for (float x = startX; x <= ( startX + width); x += width) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // TOP AND BOTTTOM
+        for (float y = startY; y <= (startY + height); y += height) {
+            for (float x = startX; x < ( startX + width); x += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                }
+            }
+        }
+
+        startX = 0;
+        startY = (origHeight / 2.0) - 3.0;
+        startZ = (origLength / 2.0);
+        length = 2.0;
+        width = 6.0;
+        height = 2.0;
+        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
+        DELTA = floor(sqrt(factor) * 100) / 100;
+        // FRONT AND BACK
+        for (float z = startZ; z <= (startZ + length); z += length) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float x = startX; x < ( startX + width); x+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // LEFT AND RIGHT
+        for (float x = startX; x <= ( startX + width); x += width) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // TOP AND BOTTTOM
+        for (float y = startY; y <= (startY + height); y += height) {
+            for (float x = startX; x < ( startX + width); x += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                }
+            }
+        }
+        
         cout << "Polygon count:" << i << " for " << filename << "\n";
         objectFile.close();
         cout << "Done Generating Polygons\n";
@@ -387,6 +498,7 @@ void generatePolygons(double width, double height, double length, string filenam
     }
     
 }
+
 
 //this function determines the ownership of each cell of a patch by another patch
 void determineCellOwnership() {
@@ -489,20 +601,27 @@ void calculateFormFactors() {
 }
 
 void progressiveRadiosity() {
-// The following is just pseudocode, still working on this part
-    
-//    B[i] = Unshot[i] = E[i]
-//    while (not converged) {
-//        Choose i with largest Unshot[i]*A[i]
-//        Shoot(i)
-//    }
-//    
-//    Shoot(i):
-//    for j = 1..n {
-//        Compute the form factor FF[i,j]
-//        Delta[j] = ρ[j] FF[i,j] Unshot[i] A[i]/A[j]
-//        B[j] += Delta[j]
-//        Unshot[j] += Delta[j]
-//    }
-//    Unshot[i] = 0
+    GLfloat unShot[polygons];
+    GLfloat delta[polygons];
+    for (int i = 0 ; i < polygons; i++) {
+        if ((i > 7100 && i < 7133) ||
+            (i > 7200 && i < 7233)) {
+            unShot[i] = delta[i] = flux[i] = 100.0;  // original light sources
+        } else {
+            unShot[i] = delta[i] = flux[i] = 0.0;
+        }
+    }
+    for (int i = 0; i < polygons; i++) {
+        if (unShot[i] != 0.0) {
+            if(patches[i].getArea() == -1.0)
+                patches[i].calcArea();
+            for (int j = i ; j < polygons; j++) {
+                if(patches[j].getArea() == -1.0)
+                    patches[j].calcArea();
+                delta[j] = 0.75 * formFactors[i][j] * unShot[i] * (patches[i].getArea()/patches[j].getArea());
+                flux[j] += delta[j];
+                unShot[j] += delta[j];
+            }
+        }
+    }
 }

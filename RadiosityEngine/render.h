@@ -17,19 +17,18 @@ CCamera Camera;
 
 Patch *patches;
 int polygons;
+GLfloat *flux;
 
 #ifndef RadiosityEngine_render_h
 #define RadiosityEngine_render_h
 
 
 
-void drawPatch(Patch patch) {
-   
+void drawPatch(Patch patch, GLfloat flux) {
     Vector *vertices = patch.getVertices();
     for (int i = 0 ; i < 3; i++) {
         glVertex3f(vertices[i].getX()/15, vertices[i].getY()/15, vertices[i].getZ()/15);
     }
-    
 }
 
 
@@ -59,13 +58,19 @@ void Display(void)
     //Draw the "world":
     
     glPushMatrix();
-    glBegin(GL_LINES);
-    for (int i = 0 ; i < polygons; i++) {
-        drawPatch(patches[i]);
+
+    for (int i = 0 ; i < polygons - 1; i++) {
+        if ((i > 7100 && i < 7133) ||
+            (i > 7200 && i < 7233)) {
+            glBegin(GL_TRIANGLE_STRIP);
+        } else {
+            glBegin(GL_LINE_LOOP);
+        }
+        drawPatch(patches[i],flux[i]);
+        glEnd();
     }
-    glEnd();
+
     glPopMatrix();
-    
     
     //finish rendering:
     glFlush();  
@@ -129,17 +134,29 @@ void KeyDown(unsigned char key, int x, int y)
             Camera.RotateZ(5.0);
             Display();
             break;
+        case 'p':
+            cout << "Position:";
+            Camera.getPosition().print();
+            cout << "\nRight Vector";
+            Camera.getRightVector().print();
+            cout << "\nUp Vector";
+            Camera.getUpVector().print();
+            cout << "\nView direction";
+            Camera.getViewDir().print();
+            break;
             
     }
 }
 
 int render(int *argcp, char **argv) {
+
+    
     glutInit(argcp, argv);
     glutInitWindowSize(2880, 1800);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
     glutCreateWindow("Camera");
-    Camera.Move( Vector(0.0, 0.0, 3.0 ));
-    Camera.MoveForward( 1.0 );
+    Camera.Move( Vector(0.43,0.79,2.9 ));
+//    Camera.MoveForward( 1.0 );
     glutReshapeFunc(reshape);
     glutDisplayFunc(Display);
 	glutKeyboardFunc(KeyDown);

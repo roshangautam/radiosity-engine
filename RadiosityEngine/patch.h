@@ -52,9 +52,15 @@ class Patch {
     Vector vertices[3];
     Vector vectors[3];
     Vector center;
+    float area;
     HemiCell cellData[192];
 
 public:
+    
+    Patch() {
+        area = -1.0;
+    }
+    
     void setVertices(Vector vertex1, Vector vertex2, Vector vertex3) {
         vertices[0] = vertex1;
         vertices[1] = vertex2;
@@ -71,6 +77,10 @@ public:
     
     Vector getCenter() {
         return center;
+    }
+    
+    float getArea() {
+        return area;
     }
 
     void setCellData(int cellIndex, float tmin, Patch *owner, int patchIndex) {
@@ -103,6 +113,17 @@ public:
         center.setX(cv.getX());
         center.setY(cv.getY());
         center.setZ(cv.getZ());
+    }
+    
+    void calcArea() {
+        Vector temp;     // Temporary 3-D vector
+        
+        Vector va = vertices[1] - vertices[0];
+        Vector vb = vertices[2] - vertices[0];
+        
+        temp = va.cross(vb);
+        area = (float) (temp.getMagnitude() / 2.0);
+        
     }
     
     void calcVectors() {
