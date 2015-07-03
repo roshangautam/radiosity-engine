@@ -60,12 +60,13 @@ void Display(void)
     glPushMatrix();
 
     for (int i = 0 ; i < polygons - 1; i++) {
-        if ((i > 7100 && i < 7133) ||
-            (i > 7200 && i < 7233)) {
-            glBegin(GL_TRIANGLE_STRIP);
-        } else {
-            glBegin(GL_LINE_LOOP);
-        }
+//        if ((i > 500 && i < 510)) {
+//            glBegin(GL_TRIANGLE_STRIP);
+//        } else {
+//            glBegin(GL_LINE_LOOP);
+//        }
+        glBegin(GL_TRIANGLE_STRIP);
+        glColor3f(flux[i], flux[i], flux[i]);
         drawPatch(patches[i],flux[i]);
         glEnd();
     }
