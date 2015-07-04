@@ -65,8 +65,8 @@ void Display(void)
 //        } else {
 //            glBegin(GL_LINE_LOOP);
 //        }
-        glBegin(GL_TRIANGLE_STRIP);
-        glColor3f(flux[i], flux[i], flux[i]);
+        glBegin(GL_LINE_LOOP);
+//        glColor3f(flux[i], flux[i], flux[i]);
         drawPatch(patches[i],flux[i]);
         glEnd();
     }

@@ -20,7 +20,7 @@ using namespace std;
 
 //number of faces on a hemicube
 enum Face {TOP_FACE, LEFT_FACE, RIGHT_FACE, FRONT_FACE, BACK_FACE};
-int POLY_COUNT = 500; // we are shooting for these many patches in each object
+int POLY_COUNT = 10000; // we are shooting for these many patches in each object
 int n = 8; //resolution of hemicube - default is 8
 int cells =  n * ceilf((float)n/2) * 6; // no of cells in each hemicube
 Vector *centers = new Vector[cells]; // array of 3dpoints to hold center of each hemicube cell
@@ -380,117 +380,117 @@ void generatePolygons(double width, double height, double length, string filenam
                 }
             }
         }
-//        
-//        startX = 0;
-//        startY = height / 2.0;
-//        startZ = length / 2.0 ;
-//        int origLength = length;
-//        int origHeight = height;
-//        length = 2.0;
-//        width = 2.0;
-//        height = 2.0;
-//        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
-//        DELTA = floor(sqrt(factor) * 100) / 100;
-//        // FRONT AND BACK
-//        for (float z = startZ; z <= (startZ + length); z += length) {
-//            for (float y = startY; y < (startY + height); y += DELTA) {
-//                for (float x = startX; x < ( startX + width); x+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    i++;
-//                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//        // LEFT AND RIGHT
-//        for (float x = startX; x <= ( startX + width); x += width) {
-//            for (float y = startY; y < (startY + height); y += DELTA) {
-//                for (float z = startZ; z < (startZ + length); z+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    i++;
-//                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//        // TOP AND BOTTTOM
-//        for (float y = startY; y <= (startY + height); y += height) {
-//            for (float x = startX; x < ( startX + width); x += DELTA) {
-//                for (float z = startZ; z < (startZ + length); z+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
-//                    i++;
-//                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//
-//        startX = 0;
-//        startY = (origHeight / 2.0) - 3.0;
-//        startZ = (origLength / 2.0);
-//        length = 2.0;
-//        width = 6.0;
-//        height = 2.0;
-//        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
-//        DELTA = floor(sqrt(factor) * 100) / 100;
-//        // FRONT AND BACK
-//        for (float z = startZ; z <= (startZ + length); z += length) {
-//            for (float y = startY; y < (startY + height); y += DELTA) {
-//                for (float x = startX; x < ( startX + width); x+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    i++;
-//                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//        // LEFT AND RIGHT
-//        for (float x = startX; x <= ( startX + width); x += width) {
-//            for (float y = startY; y < (startY + height); y += DELTA) {
-//                for (float z = startZ; z < (startZ + length); z+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    i++;
-//                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x << " " << y + DELTA << " " << z << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//        // TOP AND BOTTTOM
-//        for (float y = startY; y <= (startY + height); y += height) {
-//            for (float x = startX; x < ( startX + width); x += DELTA) {
-//                for (float z = startZ; z < (startZ + length); z+= DELTA) {
-//                    objectFile << x << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
-//                    i++;
-//                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
-//                    objectFile << x + DELTA << " " << y << " " << z << "\n";
-//                    objectFile << x << " " << y << " " << z + DELTA << "\n";
-//                    i++;
-//                }
-//            }
-//        }
-//        
+        
+        startX = 0;
+        startY = height / 2.0;
+        startZ = length / 2.0 ;
+        int origLength = length;
+        int origHeight = height;
+        length = 2.0;
+        width = 2.0;
+        height = 2.0;
+        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
+        DELTA = floor(sqrt(factor) * 100) / 100;
+        // FRONT AND BACK
+        for (float z = startZ; z <= (startZ + length); z += length) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float x = startX; x < ( startX + width); x+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // LEFT AND RIGHT
+        for (float x = startX; x <= ( startX + width); x += width) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // TOP AND BOTTTOM
+        for (float y = startY; y <= (startY + height); y += height) {
+            for (float x = startX; x < ( startX + width); x += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                }
+            }
+        }
+
+        startX = 0;
+        startY = (origHeight / 2.0) - 3.0;
+        startZ = (origLength / 2.0);
+        length = 2.0;
+        width = 6.0;
+        height = 2.0;
+        factor = (4 * (( width * height) + (length * height) + (width * length))) / (POLY_COUNT/2) ;
+        DELTA = floor(sqrt(factor) * 100) / 100;
+        // FRONT AND BACK
+        for (float z = startZ; z <= (startZ + length); z += length) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float x = startX; x < ( startX + width); x+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // LEFT AND RIGHT
+        for (float x = startX; x <= ( startX + width); x += width) {
+            for (float y = startY; y < (startY + height); y += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                    objectFile << x << " " << y + DELTA << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x << " " << y + DELTA << " " << z << "\n";
+                    i++;
+                }
+            }
+        }
+        // TOP AND BOTTTOM
+        for (float y = startY; y <= (startY + height); y += height) {
+            for (float x = startX; x < ( startX + width); x += DELTA) {
+                for (float z = startZ; z < (startZ + length); z+= DELTA) {
+                    objectFile << x << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA  << " " << y << " " << z << "\n";
+                    i++;
+                    objectFile << x + DELTA << " " << y << " " << z + DELTA << "\n";
+                    objectFile << x + DELTA << " " << y << " " << z << "\n";
+                    objectFile << x << " " << y << " " << z + DELTA << "\n";
+                    i++;
+                }
+            }
+        }
+        
         cout << "Polygon count:" << i << " for " << filename << "\n";
         objectFile.close();
         cout << "Done Generating Polygons\n";
